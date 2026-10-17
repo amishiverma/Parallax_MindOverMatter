@@ -174,7 +174,12 @@ frontend/
     - Configured `useInView(containerRef, { amount: 0.3 })` with dynamic `animKey` counter so both H2 headline and subtitle re-type from character 0 every single time the user scrolls to the section.
     - Updated `TextType.tsx` to support polymorphic `as` prop and `initialDelay`.
     - Added liquid glass hover glow (`hover:-translate-y-2 hover:border-white/30 hover:shadow-[0_0_35px_rgba(255,255,255,0.12)]`) and specular rim intensification (`group-hover:via-white/70`) across all 3 cards.
-    - Renamed project references across the codebase from "Project RedString" to **"Parallax"**.
+  - **Simplified 3-Stage Peel-Chain Flow & Liquid Glass Cards:**
+    - Stripped micro-clutter from node cards: removed micro timestamps, long hash strings, and redundant sub-labels, keeping strictly 2 clean elements: Stage & Label + Bold Financial Amount.
+    - Upgraded [WalletNode.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/graph/WalletNode.tsx) to liquid glass rounded rectangles (`bg-slate-900/40 backdrop-blur-xl border border-white/10`) with top specular rim light, ambient amber glow on active/flagged nodes, and minimal OTC Off-Ramp pills.
+    - Aligned [PeelChainFlow.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/graph/PeelChainFlow.tsx) into 3 clean horizontal stages (Stage 1 Genesis Vault -> Stage 2 3-Hop Splits -> Stage 3 3-Hop Gateways).
+    - Added animated amber running arrows (`stroke: #f59e0b`, `strokeDasharray: "6,4"`) with directional arrowheads along active trace branches.
+    - Simplified header and legend: `Peel-Chain Topology · 3 Hops (38 Splits)` | `○ Intermediary Node` · `● OTC Gateway (Amber)` · `─ Active Path`.
 
 ---
 

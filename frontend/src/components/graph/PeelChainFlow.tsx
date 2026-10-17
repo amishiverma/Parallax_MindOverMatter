@@ -25,52 +25,51 @@ interface RawNodeDef {
   walletId: string;
   amount: number;
   hop: number;
+  stage: string;
   isCashout: boolean;
-  mixerType?: string;
-  timestamp: string;
   parentId: string | null;
   x: number;
   y: number;
 }
 
 const RAW_NODES: RawNodeDef[] = [
-  // Hop 0: Leftmost Genesis Exploit
+  // Stage 1 (Left): Genesis Exploit Vault ($42M)
   {
     id: "0x7a1b...4e92",
     label: "Genesis Exploit Vault",
     walletId: "0x7a1b...4e92",
     amount: 42000000,
     hop: 0,
+    stage: "Genesis Root",
     isCashout: false,
-    timestamp: "02:14:02 UTC",
     parentId: null,
     x: 30,
-    y: 190,
+    y: 160,
   },
-  // Hop 1: Three Intermediate Branches
+  // Stage 2 (Center): 3 Hop 1 Split Nodes
   {
     id: "0x89f2...aa10",
     label: "Bridge Relay Alpha",
     walletId: "0x89f2...aa10",
     amount: 14200000,
     hop: 1,
+    stage: "Hop 1",
     isCashout: false,
-    timestamp: "02:15:33 UTC",
     parentId: "0x7a1b...4e92",
     x: 330,
-    y: 50,
+    y: 40,
   },
   {
     id: "0x33b1...cc84",
-    label: "Split Liquidity Pool Beta",
+    label: "Split Liquidity Pool",
     walletId: "0x33b1...cc84",
     amount: 18500000,
     hop: 1,
+    stage: "Hop 1",
     isCashout: false,
-    timestamp: "02:16:11 UTC",
     parentId: "0x7a1b...4e92",
     x: 330,
-    y: 190,
+    y: 160,
   },
   {
     id: "0x44d2...771e",
@@ -78,51 +77,36 @@ const RAW_NODES: RawNodeDef[] = [
     walletId: "0x44d2...771e",
     amount: 9300000,
     hop: 1,
+    stage: "Hop 1",
     isCashout: false,
-    timestamp: "02:16:48 UTC",
     parentId: "0x7a1b...4e92",
     x: 330,
-    y: 330,
+    y: 280,
   },
-  // Hop 2: Four Terminating Nodes / OTC Cashout Doors
+  // Stage 3 (Right): 3 Hop 2 Off-Ramp Nodes
   {
     id: "0x91d4...01ff",
     label: "Mixer Sub-Wallet C1",
     walletId: "0x91d4...01ff",
     amount: 9300000,
     hop: 2,
+    stage: "Hop 2",
     isCashout: false,
-    mixerType: "Tornado Cash Pool",
-    timestamp: "02:17:15 UTC",
     parentId: "0x89f2...aa10",
     x: 630,
-    y: 15,
+    y: 40,
   },
   {
     id: "0x66f0...99bb",
-    label: "Bitzlato OTC Desk",
+    label: "Bitzlato OTC Gateway",
     walletId: "0x66f0...99bb",
     amount: 4900000,
     hop: 2,
+    stage: "Hop 2",
     isCashout: true,
-    mixerType: "Telegram OTC Broker",
-    timestamp: "02:18:02 UTC",
     parentId: "0x89f2...aa10",
     x: 630,
-    y: 125,
-  },
-  {
-    id: "0x55c3...11ea",
-    label: "Privacy Pool Hop D2",
-    walletId: "0x55c3...11ea",
-    amount: 9250000,
-    hop: 2,
-    isCashout: false,
-    mixerType: "Railgun Shielded Pool",
-    timestamp: "02:18:40 UTC",
-    parentId: "0x33b1...cc84",
-    x: 630,
-    y: 245,
+    y: 160,
   },
   {
     id: "0x12a8...4409",
@@ -130,12 +114,11 @@ const RAW_NODES: RawNodeDef[] = [
     walletId: "0x12a8...4409",
     amount: 9250000,
     hop: 2,
+    stage: "Hop 2",
     isCashout: true,
-    mixerType: "P2P OTC Liquidity",
-    timestamp: "02:22:05 UTC",
     parentId: "0x33b1...cc84",
     x: 630,
-    y: 355,
+    y: 280,
   },
 ];
 
@@ -188,16 +171,15 @@ export function PeelChainFlow({ activeWalletId, onSelectWallet }: PeelChainFlowP
         walletId: n.walletId,
         amount: n.amount,
         hop: n.hop,
+        stage: n.stage,
         isCashout: n.isCashout,
-        mixerType: n.mixerType,
-        timestamp: n.timestamp,
         isSelected: activeWalletId === n.id,
         isInActivePath: activeBranch.branchNodes.has(n.id),
       },
     }));
   }, [activeWalletId, activeBranch]);
 
-  // Construct React Flow Edges with smooth SVG bezier curves and subtle amber pulse
+  // Construct React Flow Edges with smooth SVG bezier curves and animated amber running arrows
   const edges: Edge[] = useMemo(() => {
     return RAW_NODES.filter((n) => n.parentId).map((n) => {
       const edgeKey = `${n.parentId}->${n.id}`;
@@ -207,17 +189,18 @@ export function PeelChainFlow({ activeWalletId, onSelectWallet }: PeelChainFlowP
         id: edgeKey,
         source: n.parentId as string,
         target: n.id,
-        type: "default", // smooth continuous SVG bezier curves
+        type: "default",
         animated: isActive,
         style: {
-          stroke: isActive ? "#f59e0b" : "#475569",
+          stroke: isActive ? "#f59e0b" : "#334155",
           strokeWidth: isActive ? 2 : 1.5,
+          strokeDasharray: isActive ? "6,4" : undefined,
         },
         markerEnd: {
           type: MarkerType.ArrowClosed,
           color: isActive ? "#f59e0b" : "#475569",
-          width: 12,
-          height: 12,
+          width: isActive ? 14 : 12,
+          height: isActive ? 14 : 12,
         },
       };
     });
@@ -225,26 +208,26 @@ export function PeelChainFlow({ activeWalletId, onSelectWallet }: PeelChainFlowP
 
   return (
     <div className="flex flex-col h-full justify-between select-none font-sans">
-      {/* Topology Header */}
+      {/* Topology Header & Clean Legend */}
       <div className="flex justify-between items-center border-b border-zinc-800/80 pb-2 mb-2 font-sans">
         <div className="flex items-center gap-2">
           <span className="text-zinc-100 font-semibold text-xs tracking-tight">
             Peel-Chain Topology
           </span>
           <span className="text-[11px] text-zinc-400">
-            DAG · 3 Hops · 38 Micro-Splits
+            · 3 Hops (38 Splits)
           </span>
         </div>
 
         <div className="flex items-center gap-3.5 text-[11px] text-zinc-400 font-sans">
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-zinc-600 inline-block" /> Intermediary Node
+            <span className="w-2 h-2 rounded-full border border-zinc-500 inline-block" /> Intermediary Node
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-amber-500/80 inline-block" /> OTC Gateway
+            <span className="w-2 h-2 rounded-full bg-amber-500 inline-block shadow-[0_0_6px_rgba(245,158,11,0.6)]" /> OTC Gateway (Amber)
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-amber-500 inline-block shadow-[0_0_6px_rgba(245,158,11,0.6)]" /> Active Trace
+            <span className="w-3 h-0.5 bg-amber-500 inline-block" /> Active Path
           </span>
         </div>
       </div>
