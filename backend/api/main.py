@@ -1,15 +1,15 @@
 """
 main.py
 FastAPI Delivery Layer — Phase 5, Project RedString
-Serves 4 GET endpoints backed by the OSINT/blockchain/correlation engines.
+Serves endpoints backed by the OSINT/blockchain/correlation engines.
 CORS is fully open for Amishi's Next.js frontend.
 
-Endpoints:
-  GET /osint/feed              → enriched OSINT posts + author profiles
-  GET /blockchain/nodes        → wallet graph (nodes + edges + summary)
-  GET /correlation/timeline    → merged chronological event stream
-  GET /suspects/leaderboard    → ranked suspect scores with evidence
-  GET /health                  → liveness check
+All endpoints are registered under both `/` and `/api/v1/` route prefixes:
+  - /osint/feed & /api/v1/osint/feed
+  - /blockchain/nodes & /api/v1/blockchain/nodes
+  - /correlation/timeline & /api/v1/correlation/timeline
+  - /suspects/leaderboard & /api/v1/suspects/leaderboard
+  - /health & /api/v1/health
 """
 
 import json
@@ -31,6 +31,7 @@ from backend.blockchain_engine.graph_builder import build_full_graph_payload
 from backend.blockchain_engine.dormancy import analyze_blockchain_dormancy
 from backend.correlation_engine.correlator import run_correlation
 from backend.correlation_engine.timeline_builder import build_timeline
+from backend.tracker.timing_engine import detect_puppeteer_clusters
 
 # ── App Init ───────────────────────────────────────────────────────────────────
 app = FastAPI(
@@ -79,20 +80,18 @@ def _handle_missing(exc: FileNotFoundError) -> JSONResponse:
     )
 
 
-# ── Routes ─────────────────────────────────────────────────────────────────────
+# ── Route Handlers ────────────────────────────────────────────────────────────
 
-@app.get("/health", tags=["Meta"])
-def health() -> dict[str, str]:
+def _health_handler() -> dict[str, str]:
     """Liveness probe."""
     return {"status": "ok", "project": "RedString", "version": "1.0.0"}
 
 
-@app.get("/osint/feed", tags=["OSINT"])
-def osint_feed(
-    flagged_only: bool = Query(False, description="Return only flagged (boast/panic) posts"),
-    author: str | None = Query(None, description="Filter by suspect handle"),
-    limit: int = Query(100, ge=1, le=1000, description="Max posts to return"),
-) -> dict[str, Any]:
+def _osint_feed_handler(
+    flagged_only: bool = False,
+    author: str | None = None,
+    limit: int = 100,
+) -> dict[str, Any] | JSONResponse:
     """
     Enriched OSINT post feed with intent classification and author profiles.
     Includes per-author circadian sleep cycle analysis.
@@ -130,13 +129,12 @@ def osint_feed(
     }
 
 
-@app.get("/blockchain/nodes", tags=["Blockchain"])
-def blockchain_nodes(
-    role: str | None = Query(None, description="Filter by role: exploit_root|mixer|exit"),
-) -> dict[str, Any]:
+def _blockchain_nodes_handler(
+    role: str | None = None,
+) -> dict[str, Any] | JSONResponse:
     """
     Blockchain transaction graph — nodes (wallets) + edges (transfers) + summary.
-    Includes dormancy analysis aligned to OSINT blackout window.
+    Includes dormancy analysis aligned to OSINT blackout window and puppeteer clusters.
     """
     try:
         txs = _cached_chain_txs()
@@ -154,23 +152,33 @@ def blockchain_nodes(
         node_ids = {n["id"] for n in nodes}
         edges = [e for e in edges if e["source"] in node_ids and e["target"] in node_ids]
 
+    puppeteer_txs = [
+        {
+            "wallet_id": tx["from_wallet"],
+            "timestamp": tx["timestamp_utc"],
+            "amount": tx["value_usd"],
+        }
+        for tx in txs
+    ]
+    clusters = detect_puppeteer_clusters(puppeteer_txs, time_window_seconds=2) if puppeteer_txs else []
+
     return {
-        "nodes":    nodes,
-        "edges":    edges,
-        "summary":  payload["summary"],
-        "dormancy": dormancy["summary"],
+        "nodes":              nodes,
+        "edges":              edges,
+        "summary":            payload["summary"],
+        "dormancy":           dormancy["summary"],
+        "puppeteer_clusters": clusters,
         "meta": {
             "role_filter": role,
         },
     }
 
 
-@app.get("/correlation/timeline", tags=["Correlation"])
-def correlation_timeline(
-    include_neutral: bool = Query(False, description="Include neutral OSINT posts"),
-    severity: str | None = Query(None, description="Filter by severity: LOW|MEDIUM|HIGH|CRITICAL"),
-    limit: int = Query(500, ge=1, le=5000, description="Max timeline events to return"),
-) -> dict[str, Any]:
+def _correlation_timeline_handler(
+    include_neutral: bool = False,
+    severity: str | None = None,
+    limit: int = 500,
+) -> dict[str, Any] | JSONResponse:
     """
     Unified chronological timeline merging OSINT posts and blockchain transactions.
     Events are risk-scored and annotated with suspect correlation context.
@@ -202,10 +210,9 @@ def correlation_timeline(
     }
 
 
-@app.get("/suspects/leaderboard", tags=["Correlation"])
-def suspects_leaderboard(
-    top_n: int = Query(10, ge=1, le=100, description="Number of top suspects to return"),
-) -> dict[str, Any]:
+def _suspects_leaderboard_handler(
+    top_n: int = 10,
+) -> dict[str, Any] | JSONResponse:
     """
     Ranked suspect leaderboard with composite probability scores,
     sleep window evidence, and best blockchain wallet match.
@@ -228,6 +235,50 @@ def suspects_leaderboard(
             "top_n": top_n,
         },
     }
+
+
+# ── Routes: dual registration (/ and /api/v1/) ────────────────────────────────
+
+@app.get("/health", tags=["Meta"])
+@app.get("/api/v1/health", tags=["Meta"])
+def health() -> dict[str, str]:
+    return _health_handler()
+
+
+@app.get("/osint/feed", tags=["OSINT"])
+@app.get("/api/v1/osint/feed", tags=["OSINT"])
+def osint_feed(
+    flagged_only: bool = Query(False, description="Return only flagged (boast/panic) posts"),
+    author: str | None = Query(None, description="Filter by suspect handle"),
+    limit: int = Query(100, ge=1, le=1000, description="Max posts to return"),
+) -> dict[str, Any]:
+    return _osint_feed_handler(flagged_only=flagged_only, author=author, limit=limit)
+
+
+@app.get("/blockchain/nodes", tags=["Blockchain"])
+@app.get("/api/v1/blockchain/nodes", tags=["Blockchain"])
+def blockchain_nodes(
+    role: str | None = Query(None, description="Filter by role: exploit_root|mixer|exit"),
+) -> dict[str, Any]:
+    return _blockchain_nodes_handler(role=role)
+
+
+@app.get("/correlation/timeline", tags=["Correlation"])
+@app.get("/api/v1/correlation/timeline", tags=["Correlation"])
+def correlation_timeline(
+    include_neutral: bool = Query(False, description="Include neutral OSINT posts"),
+    severity: str | None = Query(None, description="Filter by severity: LOW|MEDIUM|HIGH|CRITICAL"),
+    limit: int = Query(500, ge=1, le=5000, description="Max timeline events to return"),
+) -> dict[str, Any]:
+    return _correlation_timeline_handler(include_neutral=include_neutral, severity=severity, limit=limit)
+
+
+@app.get("/suspects/leaderboard", tags=["Correlation"])
+@app.get("/api/v1/suspects/leaderboard", tags=["Correlation"])
+def suspects_leaderboard(
+    top_n: int = Query(10, ge=1, le=100, description="Number of top suspects to return"),
+) -> dict[str, Any]:
+    return _suspects_leaderboard_handler(top_n=top_n)
 
 
 # ── Dev entry point ────────────────────────────────────────────────────────────
