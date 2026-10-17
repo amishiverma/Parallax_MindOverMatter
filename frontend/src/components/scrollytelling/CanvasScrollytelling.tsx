@@ -9,7 +9,7 @@ interface CanvasScrollytellingProps {
 
 const TOTAL_FRAMES = 300;
 
-export function CanvasScrollytelling({ onLaunchWorkbench }: CanvasScrollytellingProps) {
+export function CanvasScrollytelling(_props: CanvasScrollytellingProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imagesRef = useRef<HTMLImageElement[]>([]);
@@ -34,10 +34,6 @@ export function CanvasScrollytelling({ onLaunchWorkbench }: CanvasScrollytelling
 
   // Stage 2 Descent Indicator (Progress 0.20 -> 0.75)
   const descentOpacity = useTransform(scrollYProgress, [0.18, 0.22, 0.74, 0.78], [0, 1, 1, 0]);
-
-  // Stage 3 Workbench CTA Button (Progress 0.80 -> 1.0)
-  const ctaOpacity = useTransform(scrollYProgress, [0.78, 0.84, 1], [0, 1, 1]);
-  const ctaY = useTransform(scrollYProgress, [0.78, 0.84], [30, 0]);
 
   // State to drive right-edge active stage indicator
   const [currentStage, setCurrentStage] = useState<1 | 2 | 3>(1);
@@ -148,14 +144,6 @@ export function CanvasScrollytelling({ onLaunchWorkbench }: CanvasScrollytelling
       if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
     };
   }, [frameIndex, isCached]);
-
-  const scrollToWorkbench = () => {
-    if (onLaunchWorkbench) {
-      onLaunchWorkbench();
-    } else {
-      document.getElementById("workbench")?.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
   return (
     <div ref={containerRef} className="relative h-[500vh] bg-[#090a0f]">
@@ -298,26 +286,6 @@ export function CanvasScrollytelling({ onLaunchWorkbench }: CanvasScrollytelling
               />
             </div>
           </div>
-        </motion.div>
-
-        {/* ───────────────────────────────────────────────────────────
-            STAGE 3: WORKBENCH CTA BUTTON (Progress 0.80 to 1.0 / Frames 240–300)
-            Locked terminal stage -> High impact centered bottom button
-        ─────────────────────────────────────────────────────────── */}
-        <motion.div
-          style={{ opacity: ctaOpacity, y: ctaY }}
-          className="absolute bottom-16 inset-x-0 z-30 flex flex-col items-center justify-center p-4 text-center pointer-events-auto"
-        >
-          <div className="mb-3 px-3 py-1 rounded bg-black/60 border border-slate-800 text-xs text-slate-300 font-sans backdrop-blur inline-block">
-            Target Deanonymized · Aleksei Voronin (<span className="text-red-400 font-mono">@0x_Alek</span>)
-          </div>
-
-          <button
-            onClick={scrollToWorkbench}
-            className="px-8 py-4 bg-red-600 hover:bg-red-500 text-white font-sans font-semibold rounded-lg shadow-2xl transition cursor-pointer flex items-center gap-2.5 text-sm sm:text-base tracking-wide uppercase hover:scale-105 active:scale-95 duration-150"
-          >
-            LAUNCH INVESTIGATION WORKBENCH ↓
-          </button>
         </motion.div>
       </div>
     </div>
