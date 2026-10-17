@@ -147,6 +147,11 @@ frontend/
   - Added seamless atmospheric gradient merge (`from-transparent via-[#090a0f]/80 to-[#090a0f]`) transitioning into Forensic Architecture's top blend mask.
   - Integrated React Bits components: [ShinyText.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/reactbits/ShinyText.tsx) for dynamic headline specular sheen and [TextType.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/reactbits/TextType.tsx) (GSAP cursor) for the animated subtitle.
   - Applied Image 3 liquid glass spec (`bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.5)]`) with top specular rim light across all 3 architecture cards.
+- **3D Circular Gallery & Viewport Calibration:**
+  - Built [CircularGallery.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/reactbits/CircularGallery.tsx) and [CircularGallery.css](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/reactbits/CircularGallery.css) powered by OGL WebGL.
+  - Rendered 5 curved 3D evidence panels with smooth inertia drag, touch support, trackpad wheel rotation, cylindrical bend (`bend: 2`), and forensic card overlays.
+  - Embedded inside [ForensicArchitecture.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/ForensicArchitecture.tsx) in a dedicated `w-full h-[500px]` container.
+  - Adjusted Framer Motion `viewport={{ once: true, amount: 0.1 }}` eliminating negative margin trigger stalls.
 
 ---
 

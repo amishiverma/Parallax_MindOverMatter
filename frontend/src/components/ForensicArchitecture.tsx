@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ShieldAlert, Database, GitMerge, ArrowRight } from "lucide-react";
 import { ShinyText } from "./reactbits/ShinyText";
 import { TextType } from "./reactbits/TextType";
+import { CircularGallery } from "./reactbits/CircularGallery";
 
 const cards = [
   {
@@ -39,6 +40,34 @@ const cards = [
   },
 ];
 
+const galleryItems = [
+  {
+    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=800",
+    text: "01. Smart Contract Breach",
+    description: "$42M drained at 02:14 UTC",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=800",
+    text: "02. Darkweb Intercepts",
+    description: "Telegram relay & GitHub leaks",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=800",
+    text: "03. Peel-Chain Splits",
+    description: "38 micro-wallets tracked across mixers",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800",
+    text: "04. Circadian Sync",
+    description: "04:00-11:00 UTC dormancy match",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=800",
+    text: "05. OTC Freeze Notice",
+    description: "Perpetrator unmasked & cashout halted",
+  },
+];
+
 export function ForensicArchitecture({ onLaunch }: { onLaunch: () => void }) {
   return (
     <section className="relative py-28 px-6 bg-[#090a0f] overflow-hidden">
@@ -50,7 +79,7 @@ export function ForensicArchitecture({ onLaunch }: { onLaunch: () => void }) {
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
+          viewport={{ once: true, amount: 0.1 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="text-center mb-16"
         >
@@ -85,7 +114,7 @@ export function ForensicArchitecture({ onLaunch }: { onLaunch: () => void }) {
         <motion.div
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-60px" }}
+          viewport={{ once: true, amount: 0.1 }}
           variants={{
             hidden: { opacity: 0 },
             visible: {
@@ -137,12 +166,23 @@ export function ForensicArchitecture({ onLaunch }: { onLaunch: () => void }) {
           })}
         </motion.div>
 
+        {/* 3D Interactive Circular Gallery */}
+        <div className="w-full h-[500px] relative my-12 overflow-hidden rounded-2xl bg-black/40 border border-white/10">
+          <CircularGallery
+            bend={2}
+            textColor="#ffffff"
+            borderRadius={0.06}
+            scrollEase={0.05}
+            items={galleryItems}
+          />
+        </div>
+
         {/* CTA Launch Button */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.4 }}
+          viewport={{ once: true, amount: 0.1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
           className="text-center"
         >
           <button
