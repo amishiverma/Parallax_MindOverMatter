@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🕵️ Project RedString — GHOST ATTACKS: Frontend War Room
 **Last Updated:** 2026-10-17T22:15:41+05:30  
 **Agent on Duty:** Frontend Weaver (Amishi)  
@@ -134,3 +135,28 @@ frontend/
 | 6 | Add WebSocket live feed to `DragnetBoard` once backend ready | Amishi | Medium |
 | 7 | Performance audit – Canvas FPS profiling | Amishi | Medium |
 | 8 | Mobile responsive pass | Amishi | Low |
+=======
+# 🔴 Project RedString — Task Board
+
+---
+
+## 📋 Backlog
+
+- Amishi Task 1: Dark-Mode FBI War Room UI Shell
+- Amishi Task 2: Network Graph Visualization Component (D3.js)
+- Yash Task 1: Dark-Web Chatter Scraper / Parser
+- Yash Task 2: Behavioral Intent Flagging (Regex + NLP)
+- Sanchita Task 2: Correlation Probability Engine
+
+---
+
+## 🔄 In Progress
+
+- **Sanchita Task 1: Wallet Fracture Mocking/Tracing** *(Assigned: Sanchita — The Tracker)*
+
+---
+
+## ✅ Done
+
+
+>>>>>>> 785d255cda3339e635b8b0fa6967d436a5e879f4
