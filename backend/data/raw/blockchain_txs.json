@@ -1,0 +1,311 @@
+[
+  {
+    "tx_id": "0xTX_000001",
+    "from_wallet": "0xROOT_EXPLOIT_42M",
+    "to_wallet": "0xROOT_EXPLOIT_42M",
+    "value_usd": 42000000,
+    "timestamp_utc": "2024-03-01T13:07:00+00:00",
+    "hour_utc": 13,
+    "tx_type": "exploit_inflow"
+  },
+  {
+    "tx_id": "0xTX_000002",
+    "from_wallet": "0xROOT_EXPLOIT_42M",
+    "to_wallet": "0xMIXER_HOP_1",
+    "value_usd": 41586636.59,
+    "timestamp_utc": "2024-03-01T15:59:00+00:00",
+    "hour_utc": 15,
+    "tx_type": "mixer_transfer",
+    "mixer_hop": 1
+  },
+  {
+    "tx_id": "0xTX_000003",
+    "from_wallet": "0xMIXER_HOP_1",
+    "to_wallet": "0xMIXER_HOP_2",
+    "value_usd": 40972565.4,
+    "timestamp_utc": "2024-03-01T22:41:00+00:00",
+    "hour_utc": 22,
+    "tx_type": "mixer_transfer",
+    "mixer_hop": 2
+  },
+  {
+    "tx_id": "0xTX_000004",
+    "from_wallet": "0xMIXER_HOP_2",
+    "to_wallet": "0xMIXER_HOP_3",
+    "value_usd": 40365962.21,
+    "timestamp_utc": "2024-03-02T12:18:00+00:00",
+    "hour_utc": 12,
+    "tx_type": "mixer_transfer",
+    "mixer_hop": 3
+  },
+  {
+    "tx_id": "0xTX_000005",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_01",
+    "value_usd": 2084151.87,
+    "timestamp_utc": "2024-03-02T13:31:00+00:00",
+    "hour_utc": 13,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000006",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_02",
+    "value_usd": 1001573.3,
+    "timestamp_utc": "2024-03-02T13:38:00+00:00",
+    "hour_utc": 13,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000007",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_03",
+    "value_usd": 1132025.2,
+    "timestamp_utc": "2024-03-02T19:54:00+00:00",
+    "hour_utc": 19,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000008",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_04",
+    "value_usd": 1013725.73,
+    "timestamp_utc": "2024-03-02T20:02:00+00:00",
+    "hour_utc": 20,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000023",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_19",
+    "value_usd": 913236.28,
+    "timestamp_utc": "2024-03-02T20:13:00+00:00",
+    "hour_utc": 20,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000012",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_08",
+    "value_usd": 513709.39,
+    "timestamp_utc": "2024-03-02T21:14:00+00:00",
+    "hour_utc": 21,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000025",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_21",
+    "value_usd": 633921.48,
+    "timestamp_utc": "2024-03-03T00:33:00+00:00",
+    "hour_utc": 0,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000031",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_27",
+    "value_usd": 2040786.14,
+    "timestamp_utc": "2024-03-03T01:48:00+00:00",
+    "hour_utc": 1,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000009",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_05",
+    "value_usd": 1832651.99,
+    "timestamp_utc": "2024-03-03T02:03:00+00:00",
+    "hour_utc": 2,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000015",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_11",
+    "value_usd": 1691070.74,
+    "timestamp_utc": "2024-03-03T11:13:00+00:00",
+    "hour_utc": 11,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000026",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_22",
+    "value_usd": 535542.15,
+    "timestamp_utc": "2024-03-03T11:24:00+00:00",
+    "hour_utc": 11,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000032",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_28",
+    "value_usd": 2319278.11,
+    "timestamp_utc": "2024-03-03T11:38:00+00:00",
+    "hour_utc": 11,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000020",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_16",
+    "value_usd": 1369847.6,
+    "timestamp_utc": "2024-03-03T11:46:00+00:00",
+    "hour_utc": 11,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000016",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_12",
+    "value_usd": 1923018.65,
+    "timestamp_utc": "2024-03-03T12:54:00+00:00",
+    "hour_utc": 12,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000010",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_06",
+    "value_usd": 659141.77,
+    "timestamp_utc": "2024-03-03T13:30:00+00:00",
+    "hour_utc": 13,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000028",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_24",
+    "value_usd": 1568260.33,
+    "timestamp_utc": "2024-03-03T13:54:00+00:00",
+    "hour_utc": 13,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000014",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_10",
+    "value_usd": 2309113.91,
+    "timestamp_utc": "2024-03-03T15:08:00+00:00",
+    "hour_utc": 15,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000034",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_30",
+    "value_usd": 3262192.99,
+    "timestamp_utc": "2024-03-03T15:18:00+00:00",
+    "hour_utc": 15,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000017",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_13",
+    "value_usd": 610712.08,
+    "timestamp_utc": "2024-03-03T15:56:00+00:00",
+    "hour_utc": 15,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000011",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_07",
+    "value_usd": 495523.88,
+    "timestamp_utc": "2024-03-03T16:54:00+00:00",
+    "hour_utc": 16,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000019",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_15",
+    "value_usd": 977541.15,
+    "timestamp_utc": "2024-03-03T18:03:00+00:00",
+    "hour_utc": 18,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000013",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_09",
+    "value_usd": 993278.46,
+    "timestamp_utc": "2024-03-03T18:45:00+00:00",
+    "hour_utc": 18,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000029",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_25",
+    "value_usd": 1789122.42,
+    "timestamp_utc": "2024-03-03T20:23:00+00:00",
+    "hour_utc": 20,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000033",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_29",
+    "value_usd": 575580.09,
+    "timestamp_utc": "2024-03-03T22:37:00+00:00",
+    "hour_utc": 22,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000018",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_14",
+    "value_usd": 428414.86,
+    "timestamp_utc": "2024-03-04T01:38:00+00:00",
+    "hour_utc": 1,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000022",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_18",
+    "value_usd": 2352321.69,
+    "timestamp_utc": "2024-03-04T14:42:00+00:00",
+    "hour_utc": 14,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000021",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_17",
+    "value_usd": 1091305.76,
+    "timestamp_utc": "2024-03-04T17:13:00+00:00",
+    "hour_utc": 17,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000024",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_20",
+    "value_usd": 2142873.45,
+    "timestamp_utc": "2024-03-04T19:38:00+00:00",
+    "hour_utc": 19,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000027",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_23",
+    "value_usd": 1396150.78,
+    "timestamp_utc": "2024-03-05T14:28:00+00:00",
+    "hour_utc": 14,
+    "tx_type": "cash_out"
+  },
+  {
+    "tx_id": "0xTX_000030",
+    "from_wallet": "0xMIXER_HOP_3",
+    "to_wallet": "0xEXIT_26",
+    "value_usd": 709889.95,
+    "timestamp_utc": "2024-03-05T17:52:00+00:00",
+    "hour_utc": 17,
+    "tx_type": "cash_out"
+  }
+]
