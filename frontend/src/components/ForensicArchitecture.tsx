@@ -32,7 +32,7 @@ const cards = [
     iconColor: "text-cyan-400",
     iconBg: "bg-cyan-950/40 border-cyan-500/20",
     step: "3. The Fusion Engine",
-    desc: "Statistical Poisson-latency matching and topological DAG clustering mathematically fuse forum personas with on-chain hops to deanonymize actors before fiat off-ramps.",
+    desc: "Statistical time-delta latency matching and topological DAG clustering mathematically fuse forum personas with on-chain hops to deanonymize actors before fiat off-ramps.",
     stats: [
       { label: "Latency Delta", val: "840ms" },
       { label: "Dormancy Match", val: "100%" },

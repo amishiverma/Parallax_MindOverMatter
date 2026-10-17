@@ -159,6 +159,11 @@ frontend/
   - Vertically centered Hero left text block (`absolute left-10 md:left-16 top-1/2 -translate-y-1/2 z-20 flex flex-col justify-center max-w-xl space-y-6`).
   - Redesigned [FloatingNavbar.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/FloatingNavbar.tsx) to minimalist floating text buttons with spring-animated active underline indicator (`layoutId="tabUnderline"`).
 
+- **Forensic Narrative Calibration & Sanctioned Entity Simulation Disclaimer:**
+  - Replaced "Poisson-Latency v2" techno-babble with "Time-Delta Fusion Engine" in [App.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/App.tsx) and "Statistical time-delta latency matching" in [ForensicArchitecture.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/ForensicArchitecture.tsx).
+  - Eliminated contradictory exploit types (removed flash loan & multisig bypass references from mock OSINT feed in [api.ts](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/services/api.ts)) to center strictly on an "Unchecked Reentrancy Exploit" targeting the vault `withdraw()` hook.
+  - Added simulated topology disclaimers in [PeelChainFlow.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/graph/PeelChainFlow.tsx) with `(Simulated Pool)` and `(Simulated)` node labels and an explicit header disclaimer indicating sanctioned entities (Tornado Cash, Bitzlato) are modeled solely for graph topology simulation.
+
 ---
 
 ## ⏳ Next Steps / Open Items

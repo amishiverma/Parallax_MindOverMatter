@@ -73,8 +73,8 @@ const DEFAULT_OSINT: OsintFeedItem[] = [
     id: "osint-104",
     source: "discord",
     timestamp: "02:25:19 UTC",
-    text: "DAO treasury multisig tx rejected. 3 signatures bypassed via flash loan.",
-    keywords_flagged: ["multisig", "flashloan", "exploit"],
+    text: "Security channel alert: Attacker exploited missing reentrancy guard on vault withdraw() hook.",
+    keywords_flagged: ["reentrancy", "guard", "withdraw"],
     author_id: "auditor_watch",
   },
 ];
