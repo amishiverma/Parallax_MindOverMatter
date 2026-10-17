@@ -147,11 +147,22 @@ frontend/
   - Added seamless atmospheric gradient merge (`from-transparent via-[#090a0f]/80 to-[#090a0f]`) transitioning into Forensic Architecture's top blend mask.
   - Integrated React Bits components: [ShinyText.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/reactbits/ShinyText.tsx) for dynamic headline specular sheen and [TextType.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/reactbits/TextType.tsx) (GSAP cursor) for the animated subtitle.
   - Applied Image 3 liquid glass spec (`bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.5)]`) with top specular rim light across all 3 architecture cards.
-- **3D Circular Gallery & Viewport Calibration:**
-  - Built [CircularGallery.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/reactbits/CircularGallery.tsx) and [CircularGallery.css](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/reactbits/CircularGallery.css) powered by OGL WebGL.
-  - Rendered 5 curved 3D evidence panels with smooth inertia drag, touch support, trackpad wheel rotation, cylindrical bend (`bend: 2`), and forensic card overlays.
-  - Embedded inside [ForensicArchitecture.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/ForensicArchitecture.tsx) in a dedicated `w-full h-[500px]` container.
-  - Adjusted Framer Motion `viewport={{ once: true, amount: 0.1 }}` eliminating negative margin trigger stalls.
+- **Targeted UI Cleanups & Animation Trigger Optimization:**
+  - Removed `<CircularGallery />` from [ForensicArchitecture.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/ForensicArchitecture.tsx) per streamlined layout directive.
+  - Removed `INCIDENT · 02:14 UTC EXPLOIT` red pill badge from Hero in [CanvasScrollytelling.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/scrollytelling/CanvasScrollytelling.tsx).
+  - Removed pulsing red dot beside "Project RedString" in [FloatingNavbar.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/FloatingNavbar.tsx).
+  - Cleaned right-edge descent telemetry HUD: removed brackets (`[` and `]`), updated to `font-sans font-medium text-xs`, styled active step in crisp `text-white` with `bg-red-500` glowing dot, and muted inactive steps in `text-zinc-500` with `bg-zinc-700` dots.
+  - Upgraded architecture cards with interactive spring hover lift (`whileHover={{ y: -8, scale: 1.02 }}`, `stiffness: 350`, `damping: 22`) and modern icons (`Zap`, `Layers`, `Cpu`).
+  - Added Framer Motion `useInView(ref, { amount: 0.4 })` and `start` trigger to [TextType.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/reactbits/TextType.tsx) so typewriter animation starts strictly when the user reaches the section.
+- **Instant Entry, Centered Hero & Underline Navbar:**
+  - Removed blocking preloader splash screen from [CanvasScrollytelling.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/scrollytelling/CanvasScrollytelling.tsx) for instant page mount; frame 0 draws immediately on first frame load.
+  - Vertically centered Hero left text block (`absolute left-10 md:left-16 top-1/2 -translate-y-1/2 z-20 flex flex-col justify-center max-w-xl space-y-6`).
+  - Redesigned [FloatingNavbar.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/FloatingNavbar.tsx) to minimalist floating text buttons with spring-animated active underline indicator (`layoutId="tabUnderline"`).
+
+- **Forensic Narrative Calibration & Sanctioned Entity Simulation Disclaimer:**
+  - Replaced "Poisson-Latency v2" techno-babble with "Time-Delta Fusion Engine" in [App.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/App.tsx) and "Statistical time-delta latency matching" in [ForensicArchitecture.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/ForensicArchitecture.tsx).
+  - Eliminated contradictory exploit types (removed flash loan & multisig bypass references from mock OSINT feed in [api.ts](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/services/api.ts)) to center strictly on an "Unchecked Reentrancy Exploit" targeting the vault `withdraw()` hook.
+  - Added simulated topology disclaimers in [PeelChainFlow.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/graph/PeelChainFlow.tsx) with `(Simulated Pool)` and `(Simulated)` node labels and an explicit header disclaimer indicating sanctioned entities (Tornado Cash, Bitzlato) are modeled solely for graph topology simulation.
 
 ---
 

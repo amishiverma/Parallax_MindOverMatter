@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useScroll, useTransform, motion } from "framer-motion";
 import NumberFlow from "@number-flow/react";
-import { ShieldAlert, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 interface CanvasScrollytellingProps {
   onLaunchWorkbench?: () => void;
@@ -16,7 +16,6 @@ export function CanvasScrollytelling({ onLaunchWorkbench }: CanvasScrollytelling
   const currentFrameRef = useRef<number>(0);
   const rafIdRef = useRef<number | null>(null);
 
-  const [loadedCount, setLoadedCount] = useState<number>(0);
   const [isCached, setIsCached] = useState<boolean>(false);
   const [drainedAmount, setDrainedAmount] = useState<number>(0);
 
@@ -57,7 +56,9 @@ export function CanvasScrollytelling({ onLaunchWorkbench }: CanvasScrollytelling
       img.onload = () => {
         if (!active) return;
         loaded++;
-        setLoadedCount(loaded);
+        if (i === 1) {
+          drawFrame(0);
+        }
         if (loaded === TOTAL_FRAMES) {
           setIsCached(true);
         }
@@ -66,7 +67,6 @@ export function CanvasScrollytelling({ onLaunchWorkbench }: CanvasScrollytelling
       img.onerror = () => {
         if (!active) return;
         loaded++;
-        setLoadedCount(loaded);
         if (loaded === TOTAL_FRAMES) {
           setIsCached(true);
         }
@@ -157,45 +157,8 @@ export function CanvasScrollytelling({ onLaunchWorkbench }: CanvasScrollytelling
     }
   };
 
-  const progressPercent = Math.round((loadedCount / TOTAL_FRAMES) * 100);
-
   return (
     <div ref={containerRef} className="relative h-[500vh] bg-[#090a0f]">
-      {/* ───────────────────────────────────────────────────────────
-          INITIAL CACHING PROGRESS BAR
-      ─────────────────────────────────────────────────────────── */}
-      {!isCached && (
-        <div className="fixed inset-0 z-50 bg-[#090a0f] flex flex-col items-center justify-center font-sans p-6">
-          <div className="w-full max-w-md space-y-4 text-center">
-            <div className="inline-flex items-center gap-2 text-red-500 text-xs font-semibold uppercase tracking-widest">
-              <ShieldAlert className="w-4 h-4 animate-pulse" />
-              Caching Forensic Video Stream
-            </div>
-
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-100 tracking-tight">
-              Project RedString Engine
-            </h2>
-
-            <p className="text-xs text-slate-400">
-              Loading 300 telemetry frames for zero-lag hardware-accelerated scrollytelling...
-            </p>
-
-            {/* Progress Bar */}
-            <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-red-600 transition-all duration-150 ease-out"
-                style={{ width: `${progressPercent}%` }}
-              />
-            </div>
-
-            <div className="flex justify-between text-[11px] font-mono text-slate-400 pt-1">
-              <span>{loadedCount} / {TOTAL_FRAMES} Frames</span>
-              <span>{progressPercent}%</span>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* ───────────────────────────────────────────────────────────
           STICKY FULL-SCREEN VIEWPORT CONTAINER
       ─────────────────────────────────────────────────────────── */}
@@ -218,22 +181,16 @@ export function CanvasScrollytelling({ onLaunchWorkbench }: CanvasScrollytelling
           }}
         />
 
-
         {/* ───────────────────────────────────────────────────────────
             STAGE 1: HERO OVERLAY (Progress 0.0 to 0.18 / Frames 0–55)
+            Vertically centered along the left side
         ─────────────────────────────────────────────────────────── */}
         <motion.div
           style={{ opacity: heroOpacity, y: heroY }}
-          className="absolute top-12 left-8 md:top-20 md:left-16 z-30 max-w-xl pointer-events-none select-none"
+          className="absolute left-10 md:left-16 top-1/2 -translate-y-1/2 z-20 flex flex-col justify-center max-w-xl space-y-6 pointer-events-none select-none"
         >
-          {/* Header */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-red-950/40 border border-red-800/60 text-red-400 font-sans text-xs font-semibold tracking-wider mb-4 backdrop-blur">
-            <span className="w-2 h-2 rounded-full bg-red-500 animate-ping inline-block" />
-            INCIDENT · 02:14 UTC EXPLOIT
-          </div>
-
           {/* Headline */}
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white leading-tight font-sans mb-4 drop-shadow-md">
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white leading-tight font-sans drop-shadow-md">
             Unmasking the Ghost <br />
             in the Ledger
           </h1>
@@ -244,7 +201,7 @@ export function CanvasScrollytelling({ onLaunchWorkbench }: CanvasScrollytelling
           </p>
 
           {/* Ticker Box */}
-          <div className="mt-6 bg-[#11131a]/80 backdrop-blur-md border border-slate-800 rounded-lg p-4 inline-block shadow-2xl">
+          <div className="bg-[#11131a]/80 backdrop-blur-md border border-slate-800 rounded-lg p-4 inline-block shadow-2xl self-start">
             <span className="text-[11px] font-sans font-medium text-slate-400 uppercase tracking-wider block mb-1">
               Active Liquid Capital Drained
             </span>
@@ -259,7 +216,7 @@ export function CanvasScrollytelling({ onLaunchWorkbench }: CanvasScrollytelling
             </div>
           </div>
 
-          <div className="mt-4 flex items-center gap-2 text-xs text-slate-400 animate-bounce">
+          <div className="flex items-center gap-2 text-xs text-slate-400 animate-bounce pt-1">
             <ChevronDown className="w-4 h-4 text-red-500" />
             <span>Scroll down to initiate descent</span>
           </div>
@@ -281,46 +238,52 @@ export function CanvasScrollytelling({ onLaunchWorkbench }: CanvasScrollytelling
 
             <div className="space-y-4">
               <div
-                className={`flex items-center gap-2.5 text-xs font-sans transition-all duration-200 ${
+                className={`flex items-center gap-2.5 text-xs font-sans font-medium transition-all duration-200 ${
                   currentStage === 1
-                    ? "text-red-400 font-semibold translate-x-0"
-                    : "text-slate-500 translate-x-1"
+                    ? "text-white translate-x-0"
+                    : "text-zinc-500 translate-x-1"
                 }`}
               >
-                <span className="font-mono text-[11px]">[01 OSINT]</span>
+                <span>01 OSINT</span>
                 <span
-                  className={`w-2 h-2 rounded-full ${
-                    currentStage === 1 ? "bg-red-500 shadow-[0_0_8px_#ef4444]" : "bg-slate-700"
+                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+                    currentStage === 1
+                      ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]"
+                      : "bg-zinc-700"
                   }`}
                 />
               </div>
 
               <div
-                className={`flex items-center gap-2.5 text-xs font-sans transition-all duration-200 ${
+                className={`flex items-center gap-2.5 text-xs font-sans font-medium transition-all duration-200 ${
                   currentStage === 2
-                    ? "text-red-400 font-semibold translate-x-0"
-                    : "text-slate-500 translate-x-1"
+                    ? "text-white translate-x-0"
+                    : "text-zinc-500 translate-x-1"
                 }`}
               >
-                <span className="font-mono text-[11px]">[02 MATRIX]</span>
+                <span>02 MATRIX</span>
                 <span
-                  className={`w-2 h-2 rounded-full ${
-                    currentStage === 2 ? "bg-red-500 shadow-[0_0_8px_#ef4444]" : "bg-slate-700"
+                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+                    currentStage === 2
+                      ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]"
+                      : "bg-zinc-700"
                   }`}
                 />
               </div>
 
               <div
-                className={`flex items-center gap-2.5 text-xs font-sans transition-all duration-200 ${
+                className={`flex items-center gap-2.5 text-xs font-sans font-medium transition-all duration-200 ${
                   currentStage === 3
-                    ? "text-red-400 font-semibold translate-x-0"
-                    : "text-slate-500 translate-x-1"
+                    ? "text-white translate-x-0"
+                    : "text-zinc-500 translate-x-1"
                 }`}
               >
-                <span className="font-mono text-[11px]">[03 CORRELATION]</span>
+                <span>03 CORRELATION</span>
                 <span
-                  className={`w-2 h-2 rounded-full ${
-                    currentStage === 3 ? "bg-red-500 shadow-[0_0_8px_#ef4444]" : "bg-slate-700"
+                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+                    currentStage === 3
+                      ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]"
+                      : "bg-zinc-700"
                   }`}
                 />
               </div>

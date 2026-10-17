@@ -1,12 +1,12 @@
-import { motion } from "framer-motion";
-import { ShieldAlert, Database, GitMerge, ArrowRight } from "lucide-react";
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { Zap, Layers, Cpu, ArrowRight } from "lucide-react";
 import { ShinyText } from "./reactbits/ShinyText";
 import { TextType } from "./reactbits/TextType";
-import { CircularGallery } from "./reactbits/CircularGallery";
 
 const cards = [
   {
-    icon: ShieldAlert,
+    icon: Zap,
     iconColor: "text-red-400",
     iconBg: "bg-red-950/40 border-red-500/20",
     step: "1. The Exploit",
@@ -17,7 +17,7 @@ const cards = [
     ],
   },
   {
-    icon: Database,
+    icon: Layers,
     iconColor: "text-amber-400",
     iconBg: "bg-amber-950/40 border-amber-500/20",
     step: "2. The Conflict",
@@ -28,11 +28,11 @@ const cards = [
     ],
   },
   {
-    icon: GitMerge,
+    icon: Cpu,
     iconColor: "text-cyan-400",
     iconBg: "bg-cyan-950/40 border-cyan-500/20",
     step: "3. The Fusion Engine",
-    desc: "Statistical Poisson-latency matching and topological DAG clustering mathematically fuse forum personas with on-chain hops to deanonymize actors before fiat off-ramps.",
+    desc: "Statistical time-delta latency matching and topological DAG clustering mathematically fuse forum personas with on-chain hops to deanonymize actors before fiat off-ramps.",
     stats: [
       { label: "Latency Delta", val: "840ms" },
       { label: "Dormancy Match", val: "100%" },
@@ -40,46 +40,21 @@ const cards = [
   },
 ];
 
-const galleryItems = [
-  {
-    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=800",
-    text: "01. Smart Contract Breach",
-    description: "$42M drained at 02:14 UTC",
-  },
-  {
-    image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=800",
-    text: "02. Darkweb Intercepts",
-    description: "Telegram relay & GitHub leaks",
-  },
-  {
-    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=800",
-    text: "03. Peel-Chain Splits",
-    description: "38 micro-wallets tracked across mixers",
-  },
-  {
-    image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800",
-    text: "04. Circadian Sync",
-    description: "04:00-11:00 UTC dormancy match",
-  },
-  {
-    image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=800",
-    text: "05. OTC Freeze Notice",
-    description: "Perpetrator unmasked & cashout halted",
-  },
-];
-
 export function ForensicArchitecture({ onLaunch }: { onLaunch: () => void }) {
+  const headerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(headerRef, { amount: 0.4, once: true });
+
   return (
     <section className="relative py-28 px-6 bg-[#090a0f] overflow-hidden">
       {/* Seamless Top Blend Mask into Narrative Section */}
       <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-t from-transparent to-[#090a0f] pointer-events-none z-10" />
 
       <div className="max-w-6xl mx-auto relative z-20">
-        {/* Animated Section Header with React Bits ShinyText & TextType */}
+        {/* Animated Section Header with View Trigger */}
         <motion.div
+          ref={headerRef}
           initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.1 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="text-center mb-16"
         >
@@ -94,6 +69,7 @@ export function ForensicArchitecture({ onLaunch }: { onLaunch: () => void }) {
               shineColor="#ffffff"
               speed={2.5}
               shineWidth={50}
+              disabled={!isInView}
               className="text-3xl md:text-5xl font-bold tracking-tight font-sans inline-block"
             />
           </div>
@@ -105,12 +81,14 @@ export function ForensicArchitecture({ onLaunch }: { onLaunch: () => void }) {
               pauseDuration={4000}
               showCursor
               cursorColor="#ef4444"
+              start={isInView}
+              startOnVisible={true}
               className="text-zinc-400 text-sm md:text-base leading-relaxed"
             />
           </div>
         </motion.div>
 
-        {/* 3 Liquid Glass Cards */}
+        {/* 3 Liquid Glass Cards with Spring Hover Lift */}
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -133,7 +111,9 @@ export function ForensicArchitecture({ onLaunch }: { onLaunch: () => void }) {
                   hidden: { opacity: 0, y: 32 },
                   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
                 }}
-                className="group relative rounded-2xl p-6 bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.5)] hover:border-white/20 hover:scale-[1.015] transition-all duration-300 flex flex-col justify-between overflow-hidden"
+                whileHover={{ y: -8, scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 350, damping: 22 }}
+                className="group relative rounded-2xl p-6 bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.5)] hover:border-white/20 hover:shadow-[0_20px_45px_rgba(0,0,0,0.7)] flex flex-col justify-between overflow-hidden cursor-default"
               >
                 {/* Top Specular Rim Light */}
                 <div className="absolute inset-x-8 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
@@ -165,17 +145,6 @@ export function ForensicArchitecture({ onLaunch }: { onLaunch: () => void }) {
             );
           })}
         </motion.div>
-
-        {/* 3D Interactive Circular Gallery */}
-        <div className="w-full h-[500px] relative my-12 overflow-hidden rounded-2xl bg-black/40 border border-white/10">
-          <CircularGallery
-            bend={2}
-            textColor="#ffffff"
-            borderRadius={0.06}
-            scrollEase={0.05}
-            items={galleryItems}
-          />
-        </div>
 
         {/* CTA Launch Button */}
         <motion.div

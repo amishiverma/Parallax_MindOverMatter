@@ -92,7 +92,7 @@ const RAW_NODES: RawNodeDef[] = [
     amount: 9300000,
     hop: 2,
     isCashout: false,
-    mixerType: "Tornado Cash Pool",
+    mixerType: "Tornado Cash (Simulated Pool)",
     timestamp: "02:17:15 UTC",
     parentId: "0x89f2...aa10",
     x: 640,
@@ -100,7 +100,7 @@ const RAW_NODES: RawNodeDef[] = [
   },
   {
     id: "0x66f0...99bb",
-    label: "Bitzlato OTC Desk",
+    label: "Bitzlato OTC Desk (Simulated)",
     walletId: "0x66f0...99bb",
     amount: 4900000,
     hop: 2,
@@ -232,7 +232,10 @@ export function PeelChainFlow({ activeWalletId, onSelectWallet }: PeelChainFlowP
             Peel-Chain Topology
           </span>
           <span className="text-[11px] text-slate-500">
-            Directed Acyclic Graph · 3 Hops · 38 Micro-Splits
+            DAG · 3 Hops · 38 Micro-Splits
+          </span>
+          <span className="text-[10px] text-zinc-500 font-mono hidden xl:inline border border-zinc-800/80 px-2 py-0.5 rounded bg-zinc-900/60">
+            Sanctioned entities modeled for topology simulation
           </span>
         </div>
 

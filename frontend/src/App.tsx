@@ -86,7 +86,7 @@ export default function App() {
             <div className="flex items-center gap-4 text-xs font-sans">
               <div className="flex items-center gap-2">
                 <span className="text-slate-400">Correlation Algorithm:</span>
-                <span className="text-slate-200 font-medium">Poisson-Latency v2</span>
+                <span className="text-slate-200 font-medium">Time-Delta Fusion Engine</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-slate-400">Latency Delta:</span>

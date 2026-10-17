@@ -11,6 +11,8 @@ interface TextTypeProps {
   cursorChar?: string;
   cursorColor?: string;
   className?: string;
+  startOnVisible?: boolean;
+  start?: boolean;
 }
 
 export const TextType: React.FC<TextTypeProps> = ({
@@ -22,6 +24,7 @@ export const TextType: React.FC<TextTypeProps> = ({
   cursorChar = "|",
   cursorColor = "#ef4444",
   className = "",
+  start = true,
 }) => {
   const textArray = Array.isArray(text) ? text : [text];
   const [displayText, setDisplayText] = useState("");
@@ -43,6 +46,11 @@ export const TextType: React.FC<TextTypeProps> = ({
   }, [showCursor]);
 
   useEffect(() => {
+    if (!start) {
+      setDisplayText("");
+      return;
+    }
+
     let currentIdx = 0;
     let charIdx = 0;
     let isDeleting = false;
@@ -83,7 +91,7 @@ export const TextType: React.FC<TextTypeProps> = ({
     timeout = setTimeout(tick, typingSpeed);
 
     return () => clearTimeout(timeout);
-  }, [textArray, typingSpeed, deletingSpeed, pauseDuration]);
+  }, [textArray, typingSpeed, deletingSpeed, pauseDuration, start]);
 
   return (
     <p className={`inline-block font-sans ${className}`}>
