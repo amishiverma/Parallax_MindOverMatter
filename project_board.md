@@ -180,6 +180,9 @@ frontend/
     - Aligned [PeelChainFlow.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/graph/PeelChainFlow.tsx) into 3 clean horizontal stages (Stage 1 Genesis Vault -> Stage 2 3-Hop Splits -> Stage 3 3-Hop Gateways).
     - Added animated amber running arrows (`stroke: #f59e0b`, `strokeDasharray: "6,4"`) with directional arrowheads along active trace branches.
     - Simplified header and legend: `Peel-Chain Topology · 3 Hops (38 Splits)` | `○ Intermediary Node` · `● OTC Gateway (Amber)` · `─ Active Path`.
+  - **Brand Logo Relocation & Minimalist Underline Navbar:**
+    - Repositioned the Parallax logo (`/logo1.png`) into a standalone fixed top-left corner container (`fixed top-6 left-6 md:left-10 z-50 pointer-events-auto`) with subtle hover micro-scale.
+    - Removed the dark pill capsule background container ("back label") around the navigation tabs, giving a completely frameless floating nav bar with a clean spring-animated active underline indicator (`motion.div layoutId="tabUnderline"`).
 
 ---
 
