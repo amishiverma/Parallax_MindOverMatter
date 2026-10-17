@@ -24,86 +24,86 @@ export function SuspectDossier() {
   return (
     <div className="flex flex-col h-full justify-between font-sans text-xs select-none">
       {/* Header */}
-      <div className="flex justify-between items-center border-b border-slate-800/80 pb-2 mb-2">
-        <span className="text-slate-200 font-semibold text-xs tracking-tight flex items-center gap-1.5">
-          <Shield className="w-3.5 h-3.5 text-slate-400" /> Target Attribution & Circadian Analysis
+      <div className="flex justify-between items-center border-b border-zinc-800/80 pb-2 mb-2 font-sans">
+        <span className="text-zinc-100 font-semibold text-xs tracking-tight flex items-center gap-1.5">
+          <Shield className="w-3.5 h-3.5 text-zinc-400" /> Target Attribution & Circadian Analysis
         </span>
-        <span className="text-[11px] text-slate-400 font-medium">Confidence: High</span>
+        <span className="text-[11px] text-zinc-400 font-medium">Confidence: High</span>
       </div>
 
       {/* Main Dossier Content */}
       <div className="flex-1 overflow-y-auto space-y-3 pr-1">
         {/* Suspect Target Card */}
-        <div className="bg-[#14161f] border border-slate-800/80 rounded-lg p-3.5">
+        <div className="bg-[#14161f] border border-zinc-800/80 rounded-lg p-3.5 hover:border-zinc-700 transition-colors duration-200">
           <div className="flex justify-between items-start mb-2.5">
             <div>
-              <span className="text-[11px] text-slate-400 font-medium block">
+              <span className="text-[11px] text-zinc-400 font-medium block">
                 Primary Operator Identified
               </span>
-              <h2 className="text-base font-bold text-slate-100 mt-0.5 tracking-tight font-sans">
+              <h2 className="text-base font-bold text-zinc-100 mt-0.5 tracking-tight font-sans">
                 Aleksei Voronin
               </h2>
-              <div className="flex items-center gap-2 text-[11px] text-slate-400 mt-0.5 font-sans">
-                <span className="text-red-400 font-medium">@0x_Alek</span>
+              <div className="flex items-center gap-2 text-[11px] text-zinc-400 mt-0.5 font-sans">
+                <span className="text-zinc-300 font-mono font-medium">@0x_Alek</span>
                 <span>·</span>
-                <span className="flex items-center gap-1 text-slate-400">
+                <span className="flex items-center gap-1 text-zinc-400">
                   <MapPin className="w-3 h-3" /> Moscow, UTC+3
                 </span>
               </div>
             </div>
 
-            {/* Guilt Score Index */}
-            <div className="text-right bg-[#1b1e2a] border border-red-900/60 px-2.5 py-1.5 rounded">
-              <span className="text-[10px] text-slate-400 font-medium block">
+            {/* Guilt Score Index - Bone White Institutional Badge */}
+            <div className="text-right bg-zinc-900/80 border border-zinc-800 px-3 py-1.5 rounded-md">
+              <span className="text-[10px] text-zinc-400 font-medium block font-sans">
                 Guilt Index
               </span>
-              <span className="text-lg font-bold text-red-500 font-sans">
+              <span className="text-lg font-bold text-zinc-100 font-sans tracking-tight">
                 <NumberFlow value={94.8} locales="en-US" />%
               </span>
             </div>
           </div>
 
           {/* Target Attributes Table */}
-          <div className="grid grid-cols-2 gap-2 text-[11px] pt-2.5 border-t border-slate-800/80 text-slate-300">
+          <div className="grid grid-cols-2 gap-2 text-[11px] pt-2.5 border-t border-zinc-800/80 text-zinc-300 font-sans">
             <div>
-              <span className="text-slate-400 block text-[10px]">Solidity Compiler:</span>
-              <span className="font-mono text-slate-200 text-[10px]">0.8.20+commit.a1b7</span>
+              <span className="text-zinc-400 block text-[10px]">Solidity Compiler:</span>
+              <span className="font-mono text-zinc-200 text-[10px]">0.8.20+commit.a1b7</span>
             </div>
             <div>
-              <span className="text-slate-400 block text-[10px]">Primary Bridge:</span>
-              <span className="text-slate-200">Railgun / Stargate</span>
+              <span className="text-zinc-400 block text-[10px]">Primary Bridge:</span>
+              <span className="text-zinc-200">Railgun / Stargate</span>
             </div>
             <div>
-              <span className="text-slate-400 block text-[10px]">PGP Fingerprint:</span>
-              <span className="font-mono text-slate-200 text-[10px] truncate block">9B2A 74E1 81CD...</span>
+              <span className="text-zinc-400 block text-[10px]">PGP Fingerprint:</span>
+              <span className="font-mono text-zinc-200 text-[10px] truncate block">9B2A 74E1 81CD...</span>
             </div>
             <div>
-              <span className="text-slate-400 block text-[10px]">Temporal Latency:</span>
-              <span className="text-red-400 font-medium">840ms correlation</span>
+              <span className="text-zinc-400 block text-[10px]">Temporal Latency:</span>
+              <span className="text-zinc-200 font-mono text-[10px] font-medium">840ms correlation</span>
             </div>
           </div>
         </div>
 
         {/* 24-Hour Circadian Dormancy Histogram (SVG Dual-Series) */}
-        <div className="bg-[#14161f] border border-slate-800/80 rounded-lg p-3.5">
-          <div className="flex justify-between items-center mb-1.5">
-            <span className="text-xs text-slate-200 font-semibold flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 text-slate-400" /> Circadian Dormancy Match
+        <div className="bg-[#14161f] border border-zinc-800/80 rounded-lg p-3.5 hover:border-zinc-700 transition-colors duration-200">
+          <div className="flex justify-between items-center mb-1.5 font-sans">
+            <span className="text-xs text-zinc-100 font-semibold flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5 text-zinc-400" /> Circadian Dormancy Match
             </span>
-            <div className="flex items-center gap-3 text-[10px]">
-              <span className="flex items-center gap-1 text-slate-400">
-                <span className="w-2 h-2 bg-slate-500 inline-block rounded-xs" /> Forum Posts
+            <div className="flex items-center gap-3 text-[10px] font-sans">
+              <span className="flex items-center gap-1.5 text-zinc-400">
+                <span className="w-2 h-2 bg-zinc-500 inline-block rounded-xs" /> Forum Posts
               </span>
-              <span className="flex items-center gap-1 text-slate-400">
-                <span className="w-2 h-2 bg-red-600 inline-block rounded-xs" /> On-Chain TXs
+              <span className="flex items-center gap-1.5 text-zinc-400">
+                <span className="w-2 h-2 bg-amber-500/80 inline-block rounded-xs" /> On-Chain TXs
               </span>
             </div>
           </div>
 
-          {/* Dormancy Window Banner */}
-          <div className="bg-red-950/20 border border-red-900/40 rounded px-2.5 py-1.5 mb-2 text-[11px] flex justify-between items-center text-red-400">
-            <span className="font-medium">Dormancy Window (UTC+3 Moscow Sync)</span>
-            <span className="text-[10px] text-slate-400 font-mono">04:00 - 11:00 UTC</span>
+          {/* Dormancy Window Banner - Warm Amber Tone */}
+          <div className="bg-amber-500/[0.04] border border-amber-500/20 rounded px-2.5 py-1.5 mb-2 text-[11px] flex justify-between items-center text-zinc-300 font-sans">
+            <span className="font-medium text-zinc-200">Dormancy Window (04:00 - 11:00 UTC)</span>
+            <span className="text-[10px] text-amber-400/90 font-mono font-medium">Moscow UTC+3 Sync</span>
           </div>
 
           {/* SVG 24-Column Bar Chart */}
@@ -111,18 +111,18 @@ export function SuspectDossier() {
             <svg className="w-full h-full overflow-visible" viewBox="0 0 240 80" preserveAspectRatio="none">
               <defs>
                 <pattern id="crosshatch-dormancy" width="6" height="6" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-                  <line x1="0" y1="0" x2="0" y2="6" stroke="#ef4444" strokeWidth="1.2" opacity="0.3" />
+                  <line x1="0" y1="0" x2="0" y2="6" stroke="#f59e0b" strokeWidth="1" opacity="0.25" />
                 </pattern>
               </defs>
 
               {/* Shaded Dormant Window: Hours 4 through 10 -> (4/24 * 240) = 40 to (11/24 * 240) = 110 */}
               <rect x="40" y="0" width="70" height="70" fill="url(#crosshatch-dormancy)" rx="2" />
-              <rect x="40" y="0" width="70" height="70" fill="#ef4444" fillOpacity="0.04" />
-              <line x1="40" y1="0" x2="40" y2="70" stroke="#ef4444" strokeWidth="0.8" strokeDasharray="2 2" opacity="0.6" />
-              <line x1="110" y1="0" x2="110" y2="70" stroke="#ef4444" strokeWidth="0.8" strokeDasharray="2 2" opacity="0.6" />
+              <rect x="40" y="0" width="70" height="70" fill="#f59e0b" fillOpacity="0.03" />
+              <line x1="40" y1="0" x2="40" y2="70" stroke="#f59e0b" strokeWidth="0.8" strokeDasharray="2 2" opacity="0.35" />
+              <line x1="110" y1="0" x2="110" y2="70" stroke="#f59e0b" strokeWidth="0.8" strokeDasharray="2 2" opacity="0.35" />
 
               {/* Baseline */}
-              <line x1="0" y1="70" x2="240" y2="70" stroke="#334155" strokeWidth="1" />
+              <line x1="0" y1="70" x2="240" y2="70" stroke="#3f3f46" strokeWidth="1" />
 
               {/* 24 Columns */}
               {HOURLY_METRICS.map((d) => {
@@ -150,17 +150,17 @@ export function SuspectDossier() {
                       y={70 - postHeight}
                       width="3"
                       height={postHeight}
-                      fill={isDormant ? "#475569" : "#64748b"}
+                      fill={isDormant ? "#3f3f46" : "#71717a"}
                       rx="0.5"
                     />
 
-                    {/* Blockchain transaction bar (crimson) */}
+                    {/* Blockchain transaction bar (warm amber) */}
                     <rect
                       x={x + 3.5}
                       y={70 - txHeight}
                       width="3"
                       height={txHeight}
-                      fill={isDormant ? "#7f1d1d" : "#dc2626"}
+                      fill={isDormant ? "#78350f" : "#d97706"}
                       rx="0.5"
                     />
                   </g>
@@ -169,10 +169,10 @@ export function SuspectDossier() {
             </svg>
 
             {/* Hour Markers strictly in font-mono */}
-            <div className="flex justify-between text-[9px] text-slate-400 font-mono mt-1 px-0.5">
+            <div className="flex justify-between text-[9px] text-zinc-400 font-mono mt-1 px-0.5">
               <span>00:00</span>
-              <span className="text-red-400 font-medium">04:00 (Sleep)</span>
-              <span className="text-red-400 font-medium">11:00</span>
+              <span className="text-amber-400/90 font-medium">04:00 (Sleep)</span>
+              <span className="text-amber-400/90 font-medium">11:00</span>
               <span>18:00</span>
               <span>23:00</span>
             </div>
@@ -180,42 +180,42 @@ export function SuspectDossier() {
 
           {/* Interactive Hour Tooltip */}
           {hoveredHour && (
-            <div className="mt-2 pt-2 border-t border-slate-800 text-[11px] flex justify-between text-slate-300 font-sans">
-              <span className="font-semibold text-slate-200">{hoveredHour.hour.toString().padStart(2, "0")}:00 UTC:</span>
-              <span>Posts: <strong className="text-slate-100">{hoveredHour.posts}</strong></span>
-              <span>On-Chain TXs: <strong className="text-red-400">{hoveredHour.txs}</strong></span>
+            <div className="mt-2 pt-2 border-t border-zinc-800 text-[11px] flex justify-between text-zinc-300 font-sans">
+              <span className="font-semibold text-zinc-200">{hoveredHour.hour.toString().padStart(2, "0")}:00 UTC:</span>
+              <span>Posts: <strong className="text-zinc-100 font-mono">{hoveredHour.posts}</strong></span>
+              <span>On-Chain TXs: <strong className="text-amber-400 font-mono">{hoveredHour.txs}</strong></span>
             </div>
           )}
         </div>
 
-        {/* Forensic Evidence Logs with Clean Bullet Points */}
-        <div className="bg-[#14161f] border border-slate-800/80 rounded-lg p-3.5 space-y-2">
-          <span className="text-xs text-slate-200 font-semibold flex items-center gap-1.5 mb-1">
-            <Fingerprint className="w-3.5 h-3.5 text-red-500" /> Correlated Proof Vectors
+        {/* Forensic Evidence Logs with Clean Neutral Bullet Points */}
+        <div className="bg-[#14161f] border border-zinc-800/80 rounded-lg p-3.5 space-y-2 hover:border-zinc-700 transition-colors duration-200 font-sans">
+          <span className="text-xs text-zinc-100 font-semibold flex items-center gap-1.5 mb-1">
+            <Fingerprint className="w-3.5 h-3.5 text-zinc-400" /> Correlated Proof Vectors
           </span>
-          <ul className="space-y-2 text-[11px] text-slate-300 leading-relaxed font-sans">
+          <ul className="space-y-2 text-[11px] text-zinc-300 leading-relaxed font-sans">
             <li className="flex items-start gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" />
+              <span className="w-1.5 h-1.5 rounded-full bg-zinc-500 mt-1.5 shrink-0" />
               <span>
-                <strong>Temporal Delta:</strong> 840ms latency match between Telegram exploit announcement and genesis transaction block timestamp.
+                <strong className="text-zinc-100">Temporal Delta:</strong> 840ms latency match between Telegram exploit announcement and genesis transaction block timestamp.
               </span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" />
+              <span className="w-1.5 h-1.5 rounded-full bg-zinc-500 mt-1.5 shrink-0" />
               <span>
-                <strong>Circadian Silence:</strong> Zero recorded blockchain transactions or developer forum activity between 04:00 and 11:00 UTC (100% dormancy sync with Moscow local timezone).
+                <strong className="text-zinc-100">Circadian Silence:</strong> Zero recorded blockchain transactions or developer forum activity between 04:00 and 11:00 UTC (100% dormancy sync with Moscow local timezone).
               </span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" />
+              <span className="w-1.5 h-1.5 rounded-full bg-zinc-500 mt-1.5 shrink-0" />
               <span>
-                <strong>Compiler Fingerprint:</strong> Solidity v0.8.20 compiler optimization flags identical to 0x_Alek testnet contract deployer.
+                <strong className="text-zinc-100">Compiler Fingerprint:</strong> Solidity v0.8.20 compiler optimization flags identical to 0x_Alek testnet contract deployer.
               </span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" />
+              <span className="w-1.5 h-1.5 rounded-full bg-zinc-500 mt-1.5 shrink-0" />
               <span>
-                <strong>Mixer Settlement:</strong> Railgun shielding pool cashout traced directly to Bitzlato OTC broker desk.
+                <strong className="text-zinc-100">Mixer Settlement:</strong> Railgun shielding pool cashout traced directly to Bitzlato OTC broker desk.
               </span>
             </li>
           </ul>
@@ -223,10 +223,10 @@ export function SuspectDossier() {
       </div>
 
       {/* Footer System Status */}
-      <div className="text-[11px] text-slate-400 border-t border-slate-800/80 pt-2.5 mt-2 flex justify-between items-center font-sans">
+      <div className="text-[11px] text-zinc-400 border-t border-zinc-800/80 pt-2.5 mt-2 flex justify-between items-center font-sans">
         <span>Attribution Status</span>
-        <span className="text-red-400 font-semibold flex items-center gap-1">
-          Target Flagged for Freezing <ExternalLink className="w-3 h-3" />
+        <span className="text-amber-400/90 font-medium flex items-center gap-1">
+          Target Flagged · Under Sanctions Review <ExternalLink className="w-3 h-3" />
         </span>
       </div>
     </div>

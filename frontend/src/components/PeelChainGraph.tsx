@@ -189,7 +189,7 @@ export function PeelChainGraph({ activeWalletId, onSelectWallet }: PeelChainGrap
             <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" /> OTC Cashout Gateway
           </span>
           <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-red-600 inline-block" /> Active Trace
+            <span className="w-2 h-2 rounded-full bg-amber-500 inline-block shadow-[0_0_6px_rgba(245,158,11,0.6)]" /> Active Trace
           </span>
         </div>
       </div>
@@ -284,11 +284,11 @@ export function PeelChainGraph({ activeWalletId, onSelectWallet }: PeelChainGrap
               <div
                 className={`p-2 rounded border font-mono text-[10px] shadow-lg backdrop-blur-md transition-all ${
                   isSelected
-                    ? "bg-[#181a24] border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)] text-zinc-100 scale-105"
+                    ? "bg-[#181924] border-amber-500/70 shadow-black/50 text-zinc-100 scale-105"
                     : node.isCashout
                     ? "bg-[#14120c] border-amber-600/80 hover:border-amber-400 text-zinc-300"
                     : isInActivePath
-                    ? "bg-[#12141c] border-red-900/80 hover:border-red-600 text-zinc-300"
+                    ? "bg-[#151722] border-amber-500/35 hover:border-amber-500/60 text-zinc-300"
                     : "bg-[#0e1015]/90 border-zinc-800 hover:border-zinc-700 text-zinc-400"
                 }`}
               >
@@ -296,7 +296,7 @@ export function PeelChainGraph({ activeWalletId, onSelectWallet }: PeelChainGrap
                   <span
                     className={`text-[8px] font-semibold px-1 rounded uppercase tracking-wider ${
                       node.hop === 0
-                        ? "bg-red-950 text-red-400 border border-red-800"
+                        ? "bg-zinc-850 text-zinc-300 border border-zinc-700"
                         : node.isCashout
                         ? "bg-amber-950 text-amber-400 border border-amber-800"
                         : "bg-zinc-800 text-zinc-400"
@@ -330,7 +330,7 @@ export function PeelChainGraph({ activeWalletId, onSelectWallet }: PeelChainGrap
         {hoveredNode && (
           <div className="absolute top-3 right-3 bg-[#11131a] border border-zinc-700/80 rounded p-2.5 shadow-2xl font-mono text-[10px] w-56 z-20 pointer-events-none">
             <div className="text-zinc-500 text-[9px] uppercase tracking-wider mb-1 flex items-center gap-1">
-              <ShieldAlert className="w-3 h-3 text-red-400" /> FORENSIC NODE TELEMETRY
+              <ShieldAlert className="w-3 h-3 text-amber-400" /> FORENSIC NODE TELEMETRY
             </div>
             <div className="text-zinc-200 font-bold text-xs truncate mb-1">
               {hoveredNode.id}
@@ -369,7 +369,7 @@ export function PeelChainGraph({ activeWalletId, onSelectWallet }: PeelChainGrap
             className="flex items-center gap-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-3 py-1 rounded transition text-xs font-semibold cursor-pointer"
           >
             {isPlaying ? (
-              <Pause className="w-3.5 h-3.5 text-red-400" />
+              <Pause className="w-3.5 h-3.5 text-amber-400" />
             ) : (
               <Play className="w-3.5 h-3.5 fill-current text-zinc-300" />
             )}
@@ -395,7 +395,7 @@ export function PeelChainGraph({ activeWalletId, onSelectWallet }: PeelChainGrap
             max="600"
             value={replayOffset}
             onChange={(e) => setReplayOffset(Number(e.target.value))}
-            className="w-full h-1 bg-zinc-800 rounded appearance-none cursor-pointer accent-red-600"
+            className="w-full h-1 bg-zinc-800 rounded appearance-none cursor-pointer accent-amber-500"
           />
           <span className="text-[11px] text-zinc-400 font-mono whitespace-nowrap text-right">
             {formatReplayTime(replayOffset)}

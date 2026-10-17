@@ -162,7 +162,15 @@ frontend/
 - **Forensic Narrative Calibration & Sanctioned Entity Simulation Disclaimer:**
   - Replaced "Poisson-Latency v2" techno-babble with "Time-Delta Fusion Engine" in [App.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/App.tsx) and "Statistical time-delta latency matching" in [ForensicArchitecture.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/ForensicArchitecture.tsx).
   - Eliminated contradictory exploit types (removed flash loan & multisig bypass references from mock OSINT feed in [api.ts](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/services/api.ts)) to center strictly on an "Unchecked Reentrancy Exploit" targeting the vault `withdraw()` hook.
-  - Added simulated topology disclaimers in [PeelChainFlow.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/graph/PeelChainFlow.tsx) with `(Simulated Pool)` and `(Simulated)` node labels and an explicit header disclaimer indicating sanctioned entities (Tornado Cash, Bitzlato) are modeled solely for graph topology simulation.
+- **Institutional Forensic Workbench Redesign (Chainalysis / Palantir Gotham Style):**
+  - **Eliminated All Neon Red & AI Hacker Tropes:** Replaced harsh crimson red across the entire workbench with an institutional palette (Bone White `text-zinc-100`, subtle Warm Ochre `text-amber-400`, and muted slate).
+  - **Bone White Guilt Index:** Styled `94.8%` in crisp Bone White (`text-zinc-100`) inside a sleek slate badge (`bg-zinc-900/80 border border-zinc-800`), eliminating red numbers and glowing outlines.
+  - **Card & Node Selection:** Switched active selection to `border-amber-500/60 bg-amber-500/[0.04]` across OSINT signal cards and peel-chain wallet nodes.
+  - **Harmonized Tags & Status Dots:** Replaced red background chips with muted slate pills (`bg-zinc-800/60 text-zinc-300 border border-zinc-700/50`); substituted red status dots with subtle rings (`w-2 h-2 rounded-full bg-zinc-600` or `border border-zinc-500`).
+  - **Warm Amber Circadian Histogram:** Normal activity bars rendered in muted slate (`#71717a` / `#3f3f46`); dormant window (04:00-11:00 UTC) highlighted with delicate crosshatched warm amber tone (`#f59e0b` / `#d97706`) and Moscow sync banner.
+  - **Streamlined Left-to-Right DAG Flowchart:** Cleaned [PeelChainFlow.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/graph/PeelChainFlow.tsx) with balanced horizontal spacing and smooth continuous 1.5px solid SVG bezier curves (`type: "default"`), subtle amber active pulse tracing, obsidian Genesis root card, and minimal `OTC Off-Ramp` badges.
+  - **De-Cluttered Headers:** Simplified workbench top bar to clean title case: `Forensic Investigation — Case #42M-DEFI-HEIST` | `Latency Offset: 840ms · 38 Hop Matrix · Time-Delta Fusion Engine`, removing redundant buttons and boilerplate labels.
+  - **Unified Typography:** Banned `font-mono` on titles, headers, and badges in favor of `font-sans` (Inter), strictly reserving monospace for raw wallet hashes, compiler versions, and timestamps.
 
 ---
 

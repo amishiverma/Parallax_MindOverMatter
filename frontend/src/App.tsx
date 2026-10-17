@@ -72,45 +72,45 @@ export default function App() {
       {activeView === "workbench" && (
         <main id="workbench" className="p-4 md:p-6 pt-24 md:pt-28 space-y-4">
           {/* Workbench Header Bar */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-3 border-b border-slate-800/80 text-xs gap-3 font-sans">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-3 border-b border-zinc-800/80 text-xs gap-3 font-sans">
             <div className="flex items-center gap-3">
-              <span className="font-semibold text-slate-100 text-sm">
-                Interactive Forensic Workbench
+              <span className="font-semibold text-zinc-100 text-sm">
+                Forensic Investigation — Case #42M-DEFI-HEIST
               </span>
-              <span className="text-slate-600">|</span>
-              <span className="text-slate-400 text-xs">
-                Active Genesis Target: <span className="font-mono text-slate-200">0x7a1b...4e92</span>
+              <span className="text-zinc-600">|</span>
+              <span className="text-zinc-400 text-xs">
+                Active Genesis Target: <span className="font-mono text-zinc-200">0x7a1b...4e92</span>
               </span>
             </div>
 
             <div className="flex items-center gap-4 text-xs font-sans">
               <div className="flex items-center gap-2">
-                <span className="text-slate-400">Correlation Algorithm:</span>
-                <span className="text-slate-200 font-medium">Time-Delta Fusion Engine</span>
+                <span className="text-zinc-400">Latency Offset:</span>
+                <span className="text-zinc-200 font-medium font-mono">840ms</span>
               </div>
+              <span className="text-zinc-600">·</span>
               <div className="flex items-center gap-2">
-                <span className="text-slate-400">Latency Delta:</span>
-                <span className="text-red-400 font-medium font-mono">840ms</span>
+                <span className="text-zinc-400">Topology:</span>
+                <span className="text-zinc-200 font-medium">38 Hop Matrix</span>
               </div>
-              <button
-                onClick={() => setActiveView("landing")}
-                className="text-xs text-slate-400 hover:text-slate-200 underline cursor-pointer ml-2"
-              >
-                Back to Scrollytelling
-              </button>
+              <span className="text-zinc-600">·</span>
+              <div className="flex items-center gap-2">
+                <span className="text-zinc-400">Algorithm:</span>
+                <span className="text-zinc-200 font-medium">Time-Delta Fusion Engine</span>
+              </div>
             </div>
           </div>
 
           {/* 3-Column Stepped Workbench Hierarchy: 25% | 50% | 25% */}
           <div className="grid grid-cols-12 gap-4 h-[calc(100vh-140px)] min-h-[640px]">
             {/* PANEL 1 (Left 25% - col-span-3): OSINT Stream */}
-            <div className="col-span-12 lg:col-span-3 bg-[#14161f] border border-slate-800/80 rounded-xl p-3.5 flex flex-col justify-between text-xs font-sans">
+            <div className="col-span-12 lg:col-span-3 bg-[#14161f] border border-zinc-800/80 rounded-xl p-3.5 flex flex-col justify-between text-xs font-sans">
               <div>
-                <div className="flex justify-between items-center border-b border-slate-800/80 pb-2.5 mb-3">
-                  <span className="text-slate-200 font-semibold text-xs tracking-tight flex items-center gap-1.5">
-                    <Search className="w-3.5 h-3.5 text-slate-400" /> OSINT Intercepts
+                <div className="flex justify-between items-center border-b border-zinc-800/80 pb-2.5 mb-3 font-sans">
+                  <span className="text-zinc-200 font-semibold text-xs tracking-tight flex items-center gap-1.5">
+                    <Search className="w-3.5 h-3.5 text-zinc-400" /> OSINT Intercepts
                   </span>
-                  <span className="text-[11px] text-slate-400 font-medium">
+                  <span className="text-[11px] text-zinc-400 font-medium">
                     {osint.length} Signals Captured
                   </span>
                 </div>
@@ -118,9 +118,9 @@ export default function App() {
                 {isLoading ? (
                   <div className="space-y-3 animate-pulse">
                     {[1, 2, 3].map((i) => (
-                      <div key={i} className="p-3 bg-[#10121a] border border-slate-800/80 rounded-lg space-y-2">
-                        <div className="h-2.5 bg-slate-700 rounded w-1/3" />
-                        <div className="h-3 bg-slate-800 rounded w-full" />
+                      <div key={i} className="p-3 bg-[#10121a] border border-zinc-800/80 rounded-lg space-y-2">
+                        <div className="h-2.5 bg-zinc-700 rounded w-1/3" />
+                        <div className="h-3 bg-zinc-800 rounded w-full" />
                       </div>
                     ))}
                   </div>
@@ -133,30 +133,30 @@ export default function App() {
                           key={item.id}
                           id={`card-${item.id}`}
                           onClick={() => handleSelectOsint(item.id)}
-                          className={`p-3 rounded-lg border transition-all cursor-pointer ${
+                          className={`p-3 rounded-lg border transition-all duration-200 cursor-pointer ${
                             isSelected
-                              ? "bg-[#1c1f2e] border-red-500 shadow-md shadow-red-950/20 text-slate-100"
-                              : "bg-[#10121a] border-slate-800/90 hover:border-slate-700 text-slate-300"
+                              ? "bg-amber-500/[0.04] border-amber-500/60 shadow-sm text-zinc-100"
+                              : "bg-[#10121a] border-zinc-800/90 hover:border-zinc-700 text-zinc-300"
                           }`}
                         >
-                          <div className="flex justify-between text-[11px] text-slate-400 mb-1.5 font-sans">
-                            <span className="font-semibold text-slate-200 capitalize">
+                          <div className="flex justify-between text-[11px] text-zinc-400 mb-1.5 font-sans">
+                            <span className="font-semibold text-zinc-200 capitalize">
                               {item.source}
                             </span>
                             <span className="font-mono text-[10px]">{item.timestamp}</span>
                           </div>
 
-                          <p className="text-xs leading-relaxed mb-2 text-slate-200 font-sans">
+                          <p className="text-xs leading-relaxed mb-2 text-zinc-200 font-sans">
                             "{item.text}"
                           </p>
 
-                          <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-slate-800/80">
-                            <span className="font-mono text-[10px] text-slate-400">{item.author_id}</span>
+                          <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-zinc-800/80 font-sans">
+                            <span className="font-mono text-[10px] text-zinc-400">{item.author_id}</span>
                             <div className="flex gap-1">
                               {item.keywords_flagged.map((k) => (
                                 <span
                                   key={k}
-                                  className="bg-slate-800 text-red-400 px-1.5 py-0.5 rounded text-[10px] font-medium font-sans"
+                                  className="bg-zinc-800/60 text-zinc-300 border border-zinc-750 px-1.5 py-0.5 rounded text-[10px] font-medium font-sans"
                                 >
                                   {k}
                                 </span>
@@ -171,16 +171,16 @@ export default function App() {
               </div>
 
               {/* Status Footer */}
-              <div className="text-[11px] text-slate-400 border-t border-slate-800/80 pt-2.5 mt-3 flex justify-between items-center font-sans">
+              <div className="text-[11px] text-zinc-400 border-t border-zinc-800/80 pt-2.5 mt-3 flex justify-between items-center font-sans">
                 <span className="flex items-center gap-1.5">
                   <Radio className="w-3 h-3 text-emerald-400" /> Sensor Feed Active
                 </span>
-                <span className="font-mono text-[10px]">/api/v1/osint/feed</span>
+                <span className="font-mono text-[10px] text-zinc-500">/api/v1/osint/feed</span>
               </div>
             </div>
 
             {/* PANEL 2 (Middle 50% - col-span-6): Topological Peel-Chain Graph (@xyflow/react) */}
-            <div className="col-span-12 lg:col-span-6 bg-[#14161f] border border-slate-800/80 rounded-xl p-3.5 flex flex-col justify-between text-xs overflow-hidden">
+            <div className="col-span-12 lg:col-span-6 bg-[#14161f] border border-zinc-800/80 rounded-xl p-3.5 flex flex-col justify-between text-xs overflow-hidden">
               <PeelChainFlow
                 activeWalletId={activeWalletId}
                 onSelectWallet={handleSelectWallet}
@@ -188,7 +188,7 @@ export default function App() {
             </div>
 
             {/* PANEL 3 (Right 25% - col-span-3): Target Attribution & Circadian Analysis */}
-            <div className="col-span-12 lg:col-span-3 bg-[#14161f] border border-slate-800/80 rounded-xl p-3.5 flex flex-col justify-between text-xs overflow-hidden">
+            <div className="col-span-12 lg:col-span-3 bg-[#14161f] border border-zinc-800/80 rounded-xl p-3.5 flex flex-col justify-between text-xs overflow-hidden">
               <SuspectDossier />
             </div>
           </div>

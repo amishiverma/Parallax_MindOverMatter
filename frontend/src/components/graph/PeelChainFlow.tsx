@@ -44,8 +44,8 @@ const RAW_NODES: RawNodeDef[] = [
     isCashout: false,
     timestamp: "02:14:02 UTC",
     parentId: null,
-    x: 40,
-    y: 200,
+    x: 30,
+    y: 190,
   },
   // Hop 1: Three Intermediate Branches
   {
@@ -57,8 +57,8 @@ const RAW_NODES: RawNodeDef[] = [
     isCashout: false,
     timestamp: "02:15:33 UTC",
     parentId: "0x7a1b...4e92",
-    x: 340,
-    y: 70,
+    x: 330,
+    y: 50,
   },
   {
     id: "0x33b1...cc84",
@@ -69,8 +69,8 @@ const RAW_NODES: RawNodeDef[] = [
     isCashout: false,
     timestamp: "02:16:11 UTC",
     parentId: "0x7a1b...4e92",
-    x: 340,
-    y: 200,
+    x: 330,
+    y: 190,
   },
   {
     id: "0x44d2...771e",
@@ -81,7 +81,7 @@ const RAW_NODES: RawNodeDef[] = [
     isCashout: false,
     timestamp: "02:16:48 UTC",
     parentId: "0x7a1b...4e92",
-    x: 340,
+    x: 330,
     y: 330,
   },
   // Hop 2: Four Terminating Nodes / OTC Cashout Doors
@@ -92,15 +92,15 @@ const RAW_NODES: RawNodeDef[] = [
     amount: 9300000,
     hop: 2,
     isCashout: false,
-    mixerType: "Tornado Cash (Simulated Pool)",
+    mixerType: "Tornado Cash Pool",
     timestamp: "02:17:15 UTC",
     parentId: "0x89f2...aa10",
-    x: 640,
-    y: 30,
+    x: 630,
+    y: 15,
   },
   {
     id: "0x66f0...99bb",
-    label: "Bitzlato OTC Desk (Simulated)",
+    label: "Bitzlato OTC Desk",
     walletId: "0x66f0...99bb",
     amount: 4900000,
     hop: 2,
@@ -108,8 +108,8 @@ const RAW_NODES: RawNodeDef[] = [
     mixerType: "Telegram OTC Broker",
     timestamp: "02:18:02 UTC",
     parentId: "0x89f2...aa10",
-    x: 640,
-    y: 140,
+    x: 630,
+    y: 125,
   },
   {
     id: "0x55c3...11ea",
@@ -121,8 +121,8 @@ const RAW_NODES: RawNodeDef[] = [
     mixerType: "Railgun Shielded Pool",
     timestamp: "02:18:40 UTC",
     parentId: "0x33b1...cc84",
-    x: 640,
-    y: 260,
+    x: 630,
+    y: 245,
   },
   {
     id: "0x12a8...4409",
@@ -134,8 +134,8 @@ const RAW_NODES: RawNodeDef[] = [
     mixerType: "P2P OTC Liquidity",
     timestamp: "02:22:05 UTC",
     parentId: "0x33b1...cc84",
-    x: 640,
-    y: 370,
+    x: 630,
+    y: 355,
   },
 ];
 
@@ -197,7 +197,7 @@ export function PeelChainFlow({ activeWalletId, onSelectWallet }: PeelChainFlowP
     }));
   }, [activeWalletId, activeBranch]);
 
-  // Construct React Flow Edges
+  // Construct React Flow Edges with smooth SVG bezier curves and subtle amber pulse
   const edges: Edge[] = useMemo(() => {
     return RAW_NODES.filter((n) => n.parentId).map((n) => {
       const edgeKey = `${n.parentId}->${n.id}`;
@@ -207,17 +207,17 @@ export function PeelChainFlow({ activeWalletId, onSelectWallet }: PeelChainFlowP
         id: edgeKey,
         source: n.parentId as string,
         target: n.id,
-        type: "smoothstep",
+        type: "default", // smooth continuous SVG bezier curves
         animated: isActive,
         style: {
-          stroke: isActive ? "#dc2626" : "#334155",
-          strokeWidth: isActive ? 2.5 : 1.5,
+          stroke: isActive ? "#f59e0b" : "#475569",
+          strokeWidth: isActive ? 2 : 1.5,
         },
         markerEnd: {
           type: MarkerType.ArrowClosed,
-          color: isActive ? "#dc2626" : "#475569",
-          width: 14,
-          height: 14,
+          color: isActive ? "#f59e0b" : "#475569",
+          width: 12,
+          height: 12,
         },
       };
     });
@@ -226,34 +226,31 @@ export function PeelChainFlow({ activeWalletId, onSelectWallet }: PeelChainFlowP
   return (
     <div className="flex flex-col h-full justify-between select-none font-sans">
       {/* Topology Header */}
-      <div className="flex justify-between items-center border-b border-slate-800/80 pb-2 mb-2">
+      <div className="flex justify-between items-center border-b border-zinc-800/80 pb-2 mb-2 font-sans">
         <div className="flex items-center gap-2">
-          <span className="text-slate-200 font-semibold text-xs tracking-tight">
+          <span className="text-zinc-100 font-semibold text-xs tracking-tight">
             Peel-Chain Topology
           </span>
-          <span className="text-[11px] text-slate-500">
+          <span className="text-[11px] text-zinc-400">
             DAG · 3 Hops · 38 Micro-Splits
-          </span>
-          <span className="text-[10px] text-zinc-500 font-mono hidden xl:inline border border-zinc-800/80 px-2 py-0.5 rounded bg-zinc-900/60">
-            Sanctioned entities modeled for topology simulation
           </span>
         </div>
 
-        <div className="flex items-center gap-4 text-[11px] text-slate-400">
+        <div className="flex items-center gap-3.5 text-[11px] text-zinc-400 font-sans">
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-slate-500 inline-block" /> Intermediary Node
+            <span className="w-2 h-2 rounded-full bg-zinc-600 inline-block" /> Intermediary Node
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" /> OTC Gateway
+            <span className="w-2 h-2 rounded-full bg-amber-500/80 inline-block" /> OTC Gateway
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-red-600 inline-block" /> Active Trace
+            <span className="w-2 h-2 rounded-full bg-amber-500 inline-block shadow-[0_0_6px_rgba(245,158,11,0.6)]" /> Active Trace
           </span>
         </div>
       </div>
 
       {/* React Flow Graph Surface */}
-      <div className="relative flex-1 bg-[#0d0e12] border border-slate-800/80 rounded-lg overflow-hidden min-h-[380px]">
+      <div className="relative flex-1 bg-[#0d0e12] border border-zinc-800/80 rounded-lg overflow-hidden min-h-[380px]">
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -263,7 +260,7 @@ export function PeelChainFlow({ activeWalletId, onSelectWallet }: PeelChainFlowP
           fitViewOptions={{ padding: 0.15 }}
           minZoom={0.5}
           maxZoom={1.5}
-          defaultEdgeOptions={{ type: "smoothstep" }}
+          defaultEdgeOptions={{ type: "default" }}
         >
           <Background color="#1e2230" gap={20} size={1} />
           <Controls position="top-right" showInteractive={false} />
@@ -271,42 +268,42 @@ export function PeelChainFlow({ activeWalletId, onSelectWallet }: PeelChainFlowP
       </div>
 
       {/* Exploit Replay Controller */}
-      <div className="border border-slate-800/80 bg-[#14161f] rounded-lg p-2.5 mt-2 flex flex-col sm:flex-row justify-between items-center gap-3">
+      <div className="border border-zinc-800/80 bg-[#14161f] rounded-lg p-2.5 mt-2 flex flex-col sm:flex-row justify-between items-center gap-3 font-sans">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsPlaying(!isPlaying)}
-            className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded transition text-xs font-medium cursor-pointer"
+            className="flex items-center gap-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-3 py-1.5 rounded transition text-xs font-medium cursor-pointer"
           >
             {isPlaying ? (
-              <Pause className="w-3.5 h-3.5 text-red-400" />
+              <Pause className="w-3.5 h-3.5 text-amber-400" />
             ) : (
-              <Play className="w-3.5 h-3.5 fill-current text-slate-300" />
+              <Play className="w-3.5 h-3.5 fill-current text-zinc-300" />
             )}
             {isPlaying ? "Pause Replay" : "Replay Exploit"}
           </button>
           <button
             onClick={() => setReplayOffset(0)}
-            className="p-1.5 text-slate-400 hover:text-slate-200 transition cursor-pointer"
+            className="p-1.5 text-zinc-400 hover:text-zinc-200 transition cursor-pointer"
             title="Reset Scrubber"
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
-          <span className="text-[11px] text-slate-400 hidden sm:inline">
+          <span className="text-[11px] text-zinc-400 hidden sm:inline">
             Step {Math.floor(replayOffset / 60)} of 10
           </span>
         </div>
 
         {/* Scrub Slider */}
-        <div className="flex items-center gap-3 w-full sm:w-auto flex-1 max-w-sm">
+        <div className="flex items-center gap-3 w-full sm:w-auto flex-1 max-w-sm font-sans">
           <input
             type="range"
             min="0"
             max="600"
             value={replayOffset}
             onChange={(e) => setReplayOffset(Number(e.target.value))}
-            className="w-full h-1 bg-slate-700 rounded appearance-none cursor-pointer accent-red-600"
+            className="w-full h-1 bg-zinc-700 rounded appearance-none cursor-pointer accent-amber-500"
           />
-          <span className="font-mono text-[11px] text-slate-400 whitespace-nowrap text-right">
+          <span className="font-mono text-[11px] text-zinc-400 whitespace-nowrap text-right">
             {formatReplayTime(replayOffset)}
           </span>
         </div>
