@@ -152,7 +152,7 @@ def blockchain_nodes(
     if role:
         nodes = [n for n in nodes if n["role"] == role]
         node_ids = {n["id"] for n in nodes}
-        edges = [e for e in edges if e["source"] in node_ids or e["target"] in node_ids]
+        edges = [e for e in edges if e["source"] in node_ids and e["target"] in node_ids]
 
     return {
         "nodes":    nodes,

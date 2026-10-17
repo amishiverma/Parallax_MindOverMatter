@@ -29,7 +29,6 @@ from backend.blockchain_engine.dormancy import (
     analyze_blockchain_dormancy,
     compute_window_overlap,
 )
-from backend.blockchain_engine.graph_builder import build_full_graph_payload
 
 # ── Weight Configuration ──────────────────────────────────────────────────────
 WEIGHTS = {
@@ -113,8 +112,8 @@ def run_correlation(
       }
     """
     # --- Load data ---
-    posts = osint_posts or _load_osint()
-    txs   = chain_txs   or _load_chain()
+    posts = osint_posts if osint_posts is not None else _load_osint()
+    txs   = chain_txs   if chain_txs   is not None else _load_chain()
 
     # --- OSINT analysis ---
     enriched  = parse_feed(posts)

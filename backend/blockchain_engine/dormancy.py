@@ -86,7 +86,7 @@ def find_dormancy_window(hourly_bins: list[int], window_len: int = 8) -> dict[st
     penalised = total_txs < MIN_TX_THRESHOLD
 
     if total_txs == 0:
-        raw_score = 1.0
+        raw_score = 0.0
     else:
         raw_score = 1.0 - (best_sum / total_txs)
 
@@ -106,23 +106,34 @@ def find_dormancy_window(hourly_bins: list[int], window_len: int = 8) -> dict[st
     }
 
 
-# ── Overlap Utility (pure math — no domain assumptions) ───────────────────────
+# ── Overlap Utility (pure circular math — domain-agnostic) ────────────────────
 
 def _hours_in_window(start: int, length: int) -> set[int]:
     return {(start + i) % 24 for i in range(length)}
 
 
-def compute_window_overlap(bc_start: int, bc_len: int,
-                            osint_start: int, osint_len: int) -> dict[str, Any]:
+def compute_window_overlap(
+    start_a: int = 0,
+    len_a: int = 8,
+    start_b: int = 0,
+    len_b: int = 8,
+    **kwargs: Any,
+) -> dict[str, Any]:
     """
-    Compute hour-by-hour overlap between two arbitrary circular windows.
-    No assumptions about which window belongs to which domain.
+    Compute hour-by-hour overlap between two arbitrary circular windows over 24h.
+    Pure modular arithmetic — zero cross-domain assumptions.
+    Accepts start_a/len_a/start_b/len_b or legacy bc_start/bc_len/osint_start/osint_len.
     Returns {overlap_hours, overlap_count, overlap_pct (of smaller window)}.
     """
-    bc_set    = _hours_in_window(bc_start, bc_len)
-    osint_set = _hours_in_window(osint_start, osint_len)
-    overlap   = bc_set & osint_set
-    smaller   = min(bc_len, osint_len)
+    s_a = kwargs.get("bc_start", start_a)
+    l_a = kwargs.get("bc_len", len_a)
+    s_b = kwargs.get("osint_start", start_b)
+    l_b = kwargs.get("osint_len", len_b)
+
+    set_a   = _hours_in_window(s_a, l_a)
+    set_b   = _hours_in_window(s_b, l_b)
+    overlap = set_a & set_b
+    smaller = min(l_a, l_b)
     return {
         "overlap_hours":   sorted(overlap),
         "overlap_count":   len(overlap),
@@ -158,17 +169,10 @@ def analyze_blockchain_dormancy(txs: list[dict] | None = None,
 
     for wallet, bins in wallet_bins.items():
         w_dormancy = find_dormancy_window(bins, window_len=window_len)
-        # Placeholder overlap — correlator overwrites with real values
-        placeholder_overlap = {
-            "overlap_hours":  [],
-            "overlap_count":  0,
-            "overlap_pct":    0.0,
-        }
         wallet_profiles.append({
             "wallet":          wallet,
             "hourly_bins":     bins,
             "dormancy_window": w_dormancy,
-            "osint_overlap":   placeholder_overlap,
         })
 
     # Sort by dormancy_score descending (most dormant first)
