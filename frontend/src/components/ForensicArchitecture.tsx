@@ -1,14 +1,11 @@
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
+import { useInView } from "framer-motion";
+import TextType from "./reactbits/TextType";
 import { Zap, Layers, Cpu, ArrowRight } from "lucide-react";
-import { ShinyText } from "./reactbits/ShinyText";
-import { TextType } from "./reactbits/TextType";
 
 const cards = [
   {
     icon: Zap,
-    iconColor: "text-red-400",
-    iconBg: "bg-red-950/40 border-red-500/20",
     step: "1. The Exploit",
     desc: "$42M in digital assets was drained from liquidity smart contracts at 2:14 AM and instantly fractured into 38 peel-chain micro-wallets and cross-chain privacy bridges.",
     stats: [
@@ -18,8 +15,6 @@ const cards = [
   },
   {
     icon: Layers,
-    iconColor: "text-amber-400",
-    iconBg: "bg-amber-950/40 border-amber-500/20",
     step: "2. The Conflict",
     desc: "OSINT investigators drown in unstructured Telegram leaks and developer chatter, while on-chain analysts stare at anonymous wallet strings without identity provenance.",
     stats: [
@@ -29,8 +24,6 @@ const cards = [
   },
   {
     icon: Cpu,
-    iconColor: "text-cyan-400",
-    iconBg: "bg-cyan-950/40 border-cyan-500/20",
     step: "3. The Fusion Engine",
     desc: "Statistical time-delta latency matching and topological DAG clustering mathematically fuse forum personas with on-chain hops to deanonymize actors before fiat off-ramps.",
     stats: [
@@ -41,87 +34,69 @@ const cards = [
 ];
 
 export function ForensicArchitecture({ onLaunch }: { onLaunch: () => void }) {
-  const headerRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(headerRef, { amount: 0.4, once: true });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { amount: 0.3 });
+  const [animKey, setAnimKey] = useState(0);
+
+  // Increment key whenever scrolled into view to re-run the animation every single time
+  useEffect(() => {
+    if (isInView) {
+      setAnimKey((prev) => prev + 1);
+    }
+  }, [isInView]);
 
   return (
-    <section className="relative py-28 px-6 bg-[#090a0f] overflow-hidden">
+    <section ref={containerRef} className="relative py-28 px-6 bg-[#090a0f] overflow-hidden">
       {/* Seamless Top Blend Mask into Narrative Section */}
       <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-t from-transparent to-[#090a0f] pointer-events-none z-10" />
 
       <div className="max-w-6xl mx-auto relative z-20">
-        {/* Animated Section Header with View Trigger */}
-        <motion.div
-          ref={headerRef}
-          initial={{ opacity: 0, y: 24 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="text-center mb-16"
-        >
-          <span className="text-[11px] font-mono tracking-widest text-red-400 uppercase bg-red-950/30 px-3 py-1 rounded-full border border-red-800/40">
+        {/* Animated Header & Subtext (Re-triggers every time on entry) */}
+        <div className="text-center mb-16">
+          <span className="text-[11px] font-sans tracking-widest text-zinc-400 uppercase bg-zinc-900/80 px-3.5 py-1 rounded-full border border-zinc-800">
             Forensic Architecture
           </span>
 
-          <div className="mt-4 mb-3">
-            <ShinyText
-              text="Connecting Chatter to the Blockchain Ledger"
-              color="#e2e8f0"
-              shineColor="#ffffff"
-              speed={2.5}
-              shineWidth={50}
-              disabled={!isInView}
-              className="text-3xl md:text-5xl font-bold tracking-tight font-sans inline-block"
-            />
-          </div>
-
-          <div className="max-w-xl mx-auto min-h-[3rem]">
+          <div className="mt-4 mb-3 min-h-[56px] flex items-center justify-center">
             <TextType
-              text={["How Project RedString mathematically correlates forum disclosures with fragmented wallet transactions."]}
-              typingSpeed={35}
-              pauseDuration={4000}
-              showCursor
-              cursorColor="#ef4444"
-              start={isInView}
-              startOnVisible={true}
-              className="text-zinc-400 text-sm md:text-base leading-relaxed"
+              key={`header-${animKey}`}
+              as="h2"
+              text={["Connecting Chatter to the Blockchain Ledger"]}
+              typingSpeed={30}
+              showCursor={false}
+              className="text-3xl md:text-5xl font-bold tracking-tight text-white font-sans inline-block"
             />
           </div>
-        </motion.div>
 
-        {/* 3 Liquid Glass Cards with Spring Hover Lift */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.1 }}
-          variants={{
-            hidden: { opacity: 0 },
-            visible: {
-              opacity: 1,
-              transition: { staggerChildren: 0.16 },
-            },
-          }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-14"
-        >
+          <div className="min-h-[48px] flex items-center justify-center">
+            <TextType
+              key={`sub-${animKey}`}
+              as="p"
+              text={["How Parallax mathematically correlates forum disclosures with fragmented wallet transactions."]}
+              typingSpeed={22}
+              initialDelay={900}
+              showCursor
+              cursorColor="#f59e0b"
+              className="text-zinc-400 max-w-xl mx-auto text-sm md:text-base leading-relaxed font-sans"
+            />
+          </div>
+        </div>
+
+        {/* 3 Liquid Glass Cards with Hover Glow */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-14">
           {cards.map((card, i) => {
             const Icon = card.icon;
             return (
-              <motion.div
+              <div
                 key={i}
-                variants={{
-                  hidden: { opacity: 0, y: 32 },
-                  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
-                }}
-                whileHover={{ y: -8, scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 350, damping: 22 }}
-                className="group relative rounded-2xl p-6 bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.5)] hover:border-white/20 hover:shadow-[0_20px_45px_rgba(0,0,0,0.7)] flex flex-col justify-between overflow-hidden cursor-default"
+                className="group relative rounded-2xl p-6 bg-slate-900/30 backdrop-blur-xl border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:-translate-y-2 hover:border-white/30 hover:shadow-[0_0_35px_rgba(255,255,255,0.12)] transition-all duration-300 flex flex-col justify-between cursor-default"
               >
-                {/* Top Specular Rim Light */}
-                <div className="absolute inset-x-8 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
+                {/* Top Specular Rim Light (Intensifies on hover) */}
+                <div className="absolute inset-x-8 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent group-hover:via-white/70 transition-all duration-300 pointer-events-none" />
 
                 <div>
-                  {/* Card Icon */}
-                  <div className={`w-10 h-10 rounded-xl border flex items-center justify-center mb-5 ${card.iconBg}`}>
-                    <Icon className={`w-5 h-5 ${card.iconColor}`} />
+                  <div className="w-10 h-10 rounded-xl bg-zinc-800/60 border border-zinc-700/50 flex items-center justify-center mb-5 group-hover:border-zinc-500 transition-colors">
+                    <Icon className="w-5 h-5 text-zinc-300 group-hover:text-white transition-colors" />
                   </div>
 
                   <h3 className="text-lg font-semibold text-white tracking-tight mb-2.5 font-sans">
@@ -132,8 +107,7 @@ export function ForensicArchitecture({ onLaunch }: { onLaunch: () => void }) {
                   </p>
                 </div>
 
-                {/* Footer Metrics */}
-                <div className="border-t border-white/[0.06] pt-4 grid grid-cols-2 gap-2 text-xs font-mono">
+                <div className="border-t border-white/[0.06] pt-4 grid grid-cols-2 gap-2 text-xs font-sans">
                   {card.stats.map((s, idx) => (
                     <div key={idx}>
                       <span className="text-[10px] text-zinc-500 uppercase block">{s.label}</span>
@@ -141,27 +115,21 @@ export function ForensicArchitecture({ onLaunch }: { onLaunch: () => void }) {
                     </div>
                   ))}
                 </div>
-              </motion.div>
+              </div>
             );
           })}
-        </motion.div>
+        </div>
 
         {/* CTA Launch Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-center"
-        >
+        <div className="text-center">
           <button
             onClick={onLaunch}
-            className="group relative inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 text-white text-sm font-semibold tracking-wide shadow-[0_8px_25px_rgba(225,29,72,0.4)] hover:shadow-[0_12px_32px_rgba(225,29,72,0.6)] hover:scale-[1.02] transition-all duration-200 cursor-pointer"
+            className="group relative inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-zinc-100 hover:bg-white text-black text-sm font-semibold tracking-wide shadow-[0_4px_20px_rgba(255,255,255,0.15)] hover:shadow-[0_6px_25px_rgba(255,255,255,0.25)] hover:scale-[1.02] transition-all duration-200 cursor-pointer"
           >
             Launch Forensic Workbench
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
           </button>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

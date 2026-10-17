@@ -7,12 +7,14 @@ interface TextTypeProps {
   typingSpeed?: number;
   deletingSpeed?: number;
   pauseDuration?: number;
+  initialDelay?: number;
   showCursor?: boolean;
   cursorChar?: string;
   cursorColor?: string;
   className?: string;
   startOnVisible?: boolean;
   start?: boolean;
+  as?: React.ElementType;
 }
 
 export const TextType: React.FC<TextTypeProps> = ({
@@ -20,11 +22,13 @@ export const TextType: React.FC<TextTypeProps> = ({
   typingSpeed = 35,
   deletingSpeed = 25,
   pauseDuration = 4000,
+  initialDelay = 0,
   showCursor = true,
   cursorChar = "|",
   cursorColor = "#ef4444",
   className = "",
   start = true,
+  as: Component = "p",
 }) => {
   const textArray = Array.isArray(text) ? text : [text];
   const [displayText, setDisplayText] = useState("");
@@ -88,13 +92,13 @@ export const TextType: React.FC<TextTypeProps> = ({
       }
     };
 
-    timeout = setTimeout(tick, typingSpeed);
+    timeout = setTimeout(tick, initialDelay > 0 ? initialDelay : typingSpeed);
 
     return () => clearTimeout(timeout);
-  }, [textArray, typingSpeed, deletingSpeed, pauseDuration, start]);
+  }, [textArray, typingSpeed, deletingSpeed, pauseDuration, initialDelay, start]);
 
   return (
-    <p className={`inline-block font-sans ${className}`}>
+    <Component className={`inline-block font-sans ${className}`}>
       <span>{displayText}</span>
       {showCursor && (
         <span
@@ -105,7 +109,7 @@ export const TextType: React.FC<TextTypeProps> = ({
           {cursorChar}
         </span>
       )}
-    </p>
+    </Component>
   );
 };
 

@@ -170,7 +170,11 @@ frontend/
   - **Warm Amber Circadian Histogram:** Normal activity bars rendered in muted slate (`#71717a` / `#3f3f46`); dormant window (04:00-11:00 UTC) highlighted with delicate crosshatched warm amber tone (`#f59e0b` / `#d97706`) and Moscow sync banner.
   - **Streamlined Left-to-Right DAG Flowchart:** Cleaned [PeelChainFlow.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/graph/PeelChainFlow.tsx) with balanced horizontal spacing and smooth continuous 1.5px solid SVG bezier curves (`type: "default"`), subtle amber active pulse tracing, obsidian Genesis root card, and minimal `OTC Off-Ramp` badges.
   - **De-Cluttered Headers:** Simplified workbench top bar to clean title case: `Forensic Investigation — Case #42M-DEFI-HEIST` | `Latency Offset: 840ms · 38 Hop Matrix · Time-Delta Fusion Engine`, removing redundant buttons and boilerplate labels.
-  - **Brand Logo Integration (`logo1.png`):** Incorporated user's `logo1.png` (Parallax) into [FloatingNavbar.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/FloatingNavbar.tsx) alongside a hairline divider and the spring-underlined navigation tabs, and updated the favicon and document title in [index.html](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/index.html).
+  - **ForensicArchitecture View Re-Trigger & Card Hover Glow:**
+    - Configured `useInView(containerRef, { amount: 0.3 })` with dynamic `animKey` counter so both H2 headline and subtitle re-type from character 0 every single time the user scrolls to the section.
+    - Updated `TextType.tsx` to support polymorphic `as` prop and `initialDelay`.
+    - Added liquid glass hover glow (`hover:-translate-y-2 hover:border-white/30 hover:shadow-[0_0_35px_rgba(255,255,255,0.12)]`) and specular rim intensification (`group-hover:via-white/70`) across all 3 cards.
+    - Renamed project references across the codebase from "Project RedString" to **"Parallax"**.
 
 ---
 

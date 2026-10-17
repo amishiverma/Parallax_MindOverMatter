@@ -1,5 +1,5 @@
 /**
- * api.ts — Typed API service layer for GHOST ATTACKS / Project RedString frontend.
+ * api.ts — Typed API service layer for PARALLAX Forensic Engine.
  * Provides live backend polling with graceful local fallback data and scanning states.
  */
 import { useState, useEffect } from "react";
