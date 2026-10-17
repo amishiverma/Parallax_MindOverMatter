@@ -154,6 +154,10 @@ frontend/
   - Cleaned right-edge descent telemetry HUD: removed brackets (`[` and `]`), updated to `font-sans font-medium text-xs`, styled active step in crisp `text-white` with `bg-red-500` glowing dot, and muted inactive steps in `text-zinc-500` with `bg-zinc-700` dots.
   - Upgraded architecture cards with interactive spring hover lift (`whileHover={{ y: -8, scale: 1.02 }}`, `stiffness: 350`, `damping: 22`) and modern icons (`Zap`, `Layers`, `Cpu`).
   - Added Framer Motion `useInView(ref, { amount: 0.4 })` and `start` trigger to [TextType.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/reactbits/TextType.tsx) so typewriter animation starts strictly when the user reaches the section.
+- **Instant Entry, Centered Hero & Underline Navbar:**
+  - Removed blocking preloader splash screen from [CanvasScrollytelling.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/scrollytelling/CanvasScrollytelling.tsx) for instant page mount; frame 0 draws immediately on first frame load.
+  - Vertically centered Hero left text block (`absolute left-10 md:left-16 top-1/2 -translate-y-1/2 z-20 flex flex-col justify-center max-w-xl space-y-6`).
+  - Redesigned [FloatingNavbar.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/FloatingNavbar.tsx) to minimalist floating text buttons with spring-animated active underline indicator (`layoutId="tabUnderline"`).
 
 ---
 
