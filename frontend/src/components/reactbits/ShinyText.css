@@ -1,0 +1,20 @@
+@keyframes shiny-text {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.shiny-text {
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  display: inline-block;
+  animation: shiny-text 4s linear infinite;
+}
+
+.shiny-text.disabled {
+  animation: none;
+}

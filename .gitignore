@@ -2,3 +2,4 @@ __pycache__
 .venv
 backend/tests/
 code_context.txt
+.DS_Store
