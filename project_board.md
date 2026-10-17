@@ -170,7 +170,7 @@ frontend/
   - **Warm Amber Circadian Histogram:** Normal activity bars rendered in muted slate (`#71717a` / `#3f3f46`); dormant window (04:00-11:00 UTC) highlighted with delicate crosshatched warm amber tone (`#f59e0b` / `#d97706`) and Moscow sync banner.
   - **Streamlined Left-to-Right DAG Flowchart:** Cleaned [PeelChainFlow.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/graph/PeelChainFlow.tsx) with balanced horizontal spacing and smooth continuous 1.5px solid SVG bezier curves (`type: "default"`), subtle amber active pulse tracing, obsidian Genesis root card, and minimal `OTC Off-Ramp` badges.
   - **De-Cluttered Headers:** Simplified workbench top bar to clean title case: `Forensic Investigation — Case #42M-DEFI-HEIST` | `Latency Offset: 840ms · 38 Hop Matrix · Time-Delta Fusion Engine`, removing redundant buttons and boilerplate labels.
-  - **Unified Typography:** Banned `font-mono` on titles, headers, and badges in favor of `font-sans` (Inter), strictly reserving monospace for raw wallet hashes, compiler versions, and timestamps.
+  - **Removed Redundant Hero Terminal CTA:** Completely removed the Stage 3 bottom red button (`LAUNCH INVESTIGATION WORKBENCH ↓`) and `Target Deanonymized · Aleksei Voronin (@0x_Alek)` pill from [CanvasScrollytelling.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/scrollytelling/CanvasScrollytelling.tsx) to keep the scrollytelling viewport completely unobstructed and minimalist.
 
 ---
 
