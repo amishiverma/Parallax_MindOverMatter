@@ -226,12 +226,6 @@ export function CanvasScrollytelling({ onLaunchWorkbench }: CanvasScrollytelling
           style={{ opacity: heroOpacity, y: heroY }}
           className="absolute top-12 left-8 md:top-20 md:left-16 z-30 max-w-xl pointer-events-none select-none"
         >
-          {/* Header */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-red-950/40 border border-red-800/60 text-red-400 font-sans text-xs font-semibold tracking-wider mb-4 backdrop-blur">
-            <span className="w-2 h-2 rounded-full bg-red-500 animate-ping inline-block" />
-            INCIDENT · 02:14 UTC EXPLOIT
-          </div>
-
           {/* Headline */}
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white leading-tight font-sans mb-4 drop-shadow-md">
             Unmasking the Ghost <br />
@@ -281,46 +275,52 @@ export function CanvasScrollytelling({ onLaunchWorkbench }: CanvasScrollytelling
 
             <div className="space-y-4">
               <div
-                className={`flex items-center gap-2.5 text-xs font-sans transition-all duration-200 ${
+                className={`flex items-center gap-2.5 text-xs font-sans font-medium transition-all duration-200 ${
                   currentStage === 1
-                    ? "text-red-400 font-semibold translate-x-0"
-                    : "text-slate-500 translate-x-1"
+                    ? "text-white translate-x-0"
+                    : "text-zinc-500 translate-x-1"
                 }`}
               >
-                <span className="font-mono text-[11px]">[01 OSINT]</span>
+                <span>01 OSINT</span>
                 <span
-                  className={`w-2 h-2 rounded-full ${
-                    currentStage === 1 ? "bg-red-500 shadow-[0_0_8px_#ef4444]" : "bg-slate-700"
+                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+                    currentStage === 1
+                      ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]"
+                      : "bg-zinc-700"
                   }`}
                 />
               </div>
 
               <div
-                className={`flex items-center gap-2.5 text-xs font-sans transition-all duration-200 ${
+                className={`flex items-center gap-2.5 text-xs font-sans font-medium transition-all duration-200 ${
                   currentStage === 2
-                    ? "text-red-400 font-semibold translate-x-0"
-                    : "text-slate-500 translate-x-1"
+                    ? "text-white translate-x-0"
+                    : "text-zinc-500 translate-x-1"
                 }`}
               >
-                <span className="font-mono text-[11px]">[02 MATRIX]</span>
+                <span>02 MATRIX</span>
                 <span
-                  className={`w-2 h-2 rounded-full ${
-                    currentStage === 2 ? "bg-red-500 shadow-[0_0_8px_#ef4444]" : "bg-slate-700"
+                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+                    currentStage === 2
+                      ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]"
+                      : "bg-zinc-700"
                   }`}
                 />
               </div>
 
               <div
-                className={`flex items-center gap-2.5 text-xs font-sans transition-all duration-200 ${
+                className={`flex items-center gap-2.5 text-xs font-sans font-medium transition-all duration-200 ${
                   currentStage === 3
-                    ? "text-red-400 font-semibold translate-x-0"
-                    : "text-slate-500 translate-x-1"
+                    ? "text-white translate-x-0"
+                    : "text-zinc-500 translate-x-1"
                 }`}
               >
-                <span className="font-mono text-[11px]">[03 CORRELATION]</span>
+                <span>03 CORRELATION</span>
                 <span
-                  className={`w-2 h-2 rounded-full ${
-                    currentStage === 3 ? "bg-red-500 shadow-[0_0_8px_#ef4444]" : "bg-slate-700"
+                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+                    currentStage === 3
+                      ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]"
+                      : "bg-zinc-700"
                   }`}
                 />
               </div>

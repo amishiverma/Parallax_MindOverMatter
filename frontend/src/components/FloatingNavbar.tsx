@@ -21,7 +21,6 @@ export function FloatingNavbar({ activeTab, onTabChange, isLiveBackend }: Navbar
 
         {/* Brand */}
         <div className="flex items-center gap-2.5">
-          <span className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] animate-pulse" />
           <span className="text-sm font-semibold tracking-tight text-white font-sans">
             Project RedString
           </span>
