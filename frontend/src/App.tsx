@@ -23,7 +23,7 @@ export default function App() {
   }
 
   const isBreachQuery = typeof window !== "undefined" && window.location.search.includes("breach=true");
-  const { osint, nodes, correlations, suspects, isLiveBackend, isLoading, refetch } = useForensicData();
+  const { osint, nodes, edges, correlations, suspects, isLiveBackend, isLoading, refetch } = useForensicData();
   const [activeView, setActiveView] = useState<"landing" | "workbench">(isBreachQuery ? "workbench" : "landing");
   const [activeCorr, setActiveCorr] = useState<string>("osint-101");
   const [activeWalletId, setActiveWalletId] = useState<string>("0x66f0...99bb");
@@ -42,24 +42,26 @@ export default function App() {
   // 1.5-second polling loop for real-time breach detection from any connected device
   useEffect(() => {
     let isMounted = true;
-    let audioCtx: AudioContext | null = null;
 
     const playBreachChime = () => {
       try {
-        const AudioClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        const AudioClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext })?.webkitAudioContext;
         if (!AudioClass) return;
-        audioCtx = new AudioClass();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
+        const ctx = new AudioClass();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
         osc.type = "sawtooth";
-        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.35);
-        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.35);
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
         osc.connect(gain);
-        gain.connect(audioCtx.destination);
+        gain.connect(ctx.destination);
         osc.start();
-        osc.stop(audioCtx.currentTime + 0.36);
+        osc.stop(ctx.currentTime + 0.36);
+        setTimeout(() => {
+          ctx.close().catch(() => {});
+        }, 500);
       } catch {
         // Audio playback error or autoplay policy fallback
       }
@@ -68,22 +70,29 @@ export default function App() {
     const pollAlerts = async () => {
       try {
         const res = await fetch(`${BASE_URL}/api/v1/alerts/latest`, {
-          signal: AbortSignal.timeout(1200),
+          signal: AbortSignal.timeout(2000),
         });
         if (res.ok) {
           const data = await res.json();
-          if (isMounted) {
-            if (data.is_under_attack && !alertState.is_under_attack) {
-              setAlertState(data);
+          if (!isMounted || !data) return;
+
+          setAlertState((prev) => {
+            const wasUnderAttack = Boolean(prev?.is_under_attack);
+            const isNowUnderAttack = Boolean(data?.is_under_attack);
+
+            if (isNowUnderAttack && !wasUnderAttack) {
               setShowSirenModal(true);
               setActiveView("workbench");
               refetch();
-              playBreachChime();
-            } else if (!data.is_under_attack && alertState.is_under_attack) {
-              setAlertState(data);
+              try { playBreachChime(); } catch {}
+            } else if (!isNowUnderAttack && wasUnderAttack) {
               setShowSirenModal(false);
+              refetch();
+            } else if (isNowUnderAttack) {
+              refetch();
             }
-          }
+            return data;
+          });
         }
       } catch {
         // Network timeout fallback
@@ -96,11 +105,30 @@ export default function App() {
     return () => {
       isMounted = false;
       clearInterval(interval);
-      if (audioCtx) {
-        audioCtx.close().catch(() => {});
-      }
     };
-  }, [alertState.is_under_attack]);
+  }, []);
+
+  // Auto-sync active selections when live forensic data updates
+  useEffect(() => {
+    if (nodes?.length > 0) {
+      const exists = nodes.some((n) => n.wallet_id === activeWalletId || (n as any).walletId === activeWalletId);
+      if (!exists) {
+        const root = nodes.find((n) => n.hop_level === 0 || (n as any).hop === 0) || nodes[0];
+        if (root) {
+          setActiveWalletId(root.wallet_id || (root as any).walletId || "");
+        }
+      }
+    }
+  }, [nodes, activeWalletId]);
+
+  useEffect(() => {
+    if (osint?.length > 0) {
+      const exists = osint.some((o) => o.id === activeCorr);
+      if (!exists) {
+        setActiveCorr(osint[0].id);
+      }
+    }
+  }, [osint, activeCorr]);
 
   const handleResetBreach = async () => {
     setIsResetting(true);
@@ -340,15 +368,21 @@ export default function App() {
 
                           <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-zinc-800/80 font-sans">
                             <span className="font-mono text-[10px] text-zinc-400">{item.author_id}</span>
-                            <div className="flex gap-1">
-                              {item.keywords_flagged.map((k) => (
-                                <span
-                                  key={k}
-                                  className="bg-zinc-800/60 text-zinc-300 border border-zinc-750 px-1.5 py-0.5 rounded text-[10px] font-medium font-sans"
-                                >
-                                  {k}
+                            <div className="flex gap-1 flex-wrap justify-end">
+                              {item.keywords_flagged.length > 0 ? (
+                                item.keywords_flagged.map((k) => (
+                                  <span
+                                    key={k}
+                                    className="bg-red-950/40 text-red-400 border border-red-800/50 px-1.5 py-0.5 rounded text-[10px] font-medium font-sans"
+                                  >
+                                    {k}
+                                  </span>
+                                ))
+                              ) : (
+                                <span className="bg-zinc-800/40 text-zinc-500 border border-zinc-700/50 px-1.5 py-0.5 rounded text-[10px] font-medium font-sans">
+                                  [Neutral Chatter]
                                 </span>
-                              ))}
+                              )}
                             </div>
                           </div>
                         </div>
@@ -373,6 +407,7 @@ export default function App() {
                 activeWalletId={activeWalletId}
                 onSelectWallet={handleSelectWallet}
                 nodes={nodes}
+                edges={edges}
               />
             </div>
 

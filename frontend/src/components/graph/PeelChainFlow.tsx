@@ -4,60 +4,47 @@ import {
   Background,
   Controls,
   MarkerType,
+  useReactFlow,
+  ReactFlowProvider,
   type Node,
   type Edge,
 } from "@xyflow/react";
 import { WalletNode } from "./WalletNode";
 import { Play, Pause, RotateCcw } from "lucide-react";
-
-// Backend node shape (from /api/v1/blockchain/nodes endpoint)
-interface BackendNode {
-  wallet_id: string;
-  amount: number;
-  timestamp: string;
-  hop_level: number;
-  parent_wallet: string | null;
-  is_cashout_door: boolean;
-  label?: string;
-  mixerType?: string;
-  puppeteer_clusters?: string[];
-}
+import type { BlockchainNode, BlockchainEdge } from "../../services/api";
 
 interface PeelChainFlowProps {
   activeWalletId: string;
   onSelectWallet: (walletId: string) => void;
-  nodes: BackendNode[];
+  nodes: BlockchainNode[];
+  edges?: BlockchainEdge[];
   puppeteerClusters?: Record<string, string[]>;
 }
-
-// Convert a backend node into a positional node for the React Flow canvas
-const buildPositionalNode = (backendNode: BackendNode, index: number) => {
-  const hopLevel = backendNode.hop_level || 0;
-  const x = hopLevel * 300 + 30; // Horizontal spacing per hop
-  const y = (index % 4) * 140 + (hopLevel === 0 ? 190 : 30); // Stagger within hop level
-  return {
-    id: backendNode.wallet_id,
-    label: backendNode.label || `Wallet ${backendNode.wallet_id.slice(0, 6)}`,
-    walletId: backendNode.wallet_id,
-    amount: backendNode.amount,
-    hop: hopLevel,
-    isCashout: backendNode.is_cashout_door || false,
-    mixerType: backendNode.mixerType,
-    timestamp: backendNode.timestamp,
-    parentId: backendNode.parent_wallet || null,
-    puppeteer_clusters: backendNode.puppeteer_clusters || [],
-    x,
-    y,
-  };
-};
 
 const nodeTypes = {
   walletNode: WalletNode,
 };
 
-export function PeelChainFlow({ activeWalletId, onSelectWallet, nodes, puppeteerClusters: _puppeteerClusters }: PeelChainFlowProps) {
+function FlowInner({
+  activeWalletId,
+  onSelectWallet,
+  nodes,
+  edges: customEdges = [],
+}: PeelChainFlowProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [replayOffset, setReplayOffset] = useState(192);
+  const { fitView } = useReactFlow();
+
+  // Re-fit graph whenever node count or identities change
+  useEffect(() => {
+    if (nodes && nodes.length > 0) {
+      fitView({ padding: 0.2, duration: 200 });
+      const timer = setTimeout(() => {
+        fitView({ padding: 0.2, duration: 400 });
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [nodes, fitView]);
 
   // Exploit Replay Scrubber
   useEffect(() => {
@@ -76,78 +63,129 @@ export function PeelChainFlow({ activeWalletId, onSelectWallet, nodes, puppeteer
       .padStart(2, "0")} UTC)`;
   };
 
-  // Compute positional nodes from backend data
-  const positionalNodes = useMemo(() => {
-    return nodes.map((n, idx) => buildPositionalNode(n, idx));
-  }, [nodes]);
-
   // Find active node path to Genesis Root
   const activeBranch = useMemo(() => {
     const branchNodes = new Set<string>();
     const branchEdges = new Set<string>();
 
-    const nodeMap = new Map(positionalNodes.map((n) => [n.id, n]));
-    let current = nodeMap.get(activeWalletId);
+    const nodeMap = new Map<string, BlockchainNode>();
+    nodes.forEach((n) => {
+      const id = n.wallet_id || (n as any).walletId;
+      if (id) nodeMap.set(id, n);
+    });
 
-    while (current) {
-      branchNodes.add(current.id);
-      if (current.parentId) {
-        branchEdges.add(`${current.parentId}->${current.id}`);
+    const edgeParentMap = new Map<string, string>();
+    if (customEdges && customEdges.length > 0) {
+      customEdges.forEach((e) => {
+        if (!edgeParentMap.has(e.target)) edgeParentMap.set(e.target, e.source);
+      });
+    }
+
+    let currentId: string | undefined = activeWalletId;
+    let depth = 0;
+    while (currentId && depth < 50) {
+      branchNodes.add(currentId);
+      const node = nodeMap.get(currentId);
+      const parentId: string | null | undefined = node?.parent_wallet ?? edgeParentMap.get(currentId);
+      if (parentId && parentId !== currentId) {
+        branchEdges.add(`${parentId}->${currentId}`);
+        currentId = parentId;
+        depth++;
+      } else {
+        break;
       }
-      current = current.parentId ? nodeMap.get(current.parentId) : undefined;
     }
 
     return { branchNodes, branchEdges };
-  }, [activeWalletId, positionalNodes]);
+  }, [activeWalletId, nodes, customEdges]);
 
-  // Construct React Flow Nodes
+  // Construct React Flow Nodes with guaranteed valid non-zero positions
   const rfNodes: Node[] = useMemo(() => {
-    return positionalNodes.map((n) => ({
-      id: n.id,
-      type: "walletNode",
-      position: { x: n.x, y: n.y },
-      data: {
-        label: n.label,
-        walletId: n.walletId,
-        amount: n.amount,
-        hop: n.hop,
-        isCashout: n.isCashout,
-        mixerType: n.mixerType,
-        timestamp: n.timestamp,
-        puppeteer_clusters: n.puppeteer_clusters,
-        isSelected: activeWalletId === n.id,
-        isInActivePath: activeBranch.branchNodes.has(n.id),
-      },
-    }));
-  }, [activeWalletId, activeBranch, positionalNodes]);
+    return nodes.map((n, idx) => {
+      const id = String(n.wallet_id || (n as any).walletId || `node-${idx}`);
+      const isSelected = activeWalletId === id;
+      const isInActivePath = activeBranch.branchNodes.has(id);
+      const hop = typeof n.hop_level === "number" ? n.hop_level : ((n as any).hop ?? 0);
+      const isCashout = Boolean(n.is_cashout_door ?? (n as any).isCashout);
+      const defaultLabel = hop === 0 ? "Genesis Exploit Root" : hop === 1 ? "Privacy Shield Pool" : "OTC Cashout Desk";
 
-  // Construct React Flow Edges from parent_wallet relationships
-  const edges: Edge[] = useMemo(() => {
-    return positionalNodes
-      .filter((n) => n.parentId)
+      // Deterministic column layout: hop * 300 + 60, index * 90 + 60 (strictly non-zero)
+      const posX = (typeof n.x === "number" && n.x > 0) ? n.x : (hop * 300 + 60);
+      const posY = (typeof n.y === "number" && n.y > 0) ? n.y : (idx * 90 + 60);
+
+      return {
+        id,
+        type: "walletNode",
+        position: { x: posX, y: posY },
+        data: {
+          label: n.label || defaultLabel,
+          walletId: id,
+          amount: (typeof n.amount === "number" && n.amount > 0) ? n.amount : 42000000,
+          hop,
+          isCashout,
+          mixerType: n.mixerType,
+          timestamp: n.timestamp || "02:14:02 UTC",
+          puppeteer_clusters: n.puppeteer_clusters,
+          isSelected,
+          isInActivePath,
+        },
+      };
+    });
+  }, [activeWalletId, activeBranch, nodes]);
+
+  // Construct React Flow Edges from customEdges or parent relationships
+  const rfEdges: Edge[] = useMemo(() => {
+    if (customEdges && customEdges.length > 0) {
+      return customEdges.map((e) => {
+        const edgeKey = `${e.source}->${e.target}`;
+        const isActive = activeBranch.branchEdges.has(edgeKey);
+
+        return {
+          id: e.id || edgeKey,
+          source: e.source,
+          target: e.target,
+          type: "smoothstep",
+          animated: isActive,
+          style: {
+            stroke: isActive ? "#dc2626" : "#475569",
+            strokeWidth: isActive ? 2.5 : 1.5,
+          },
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+            color: isActive ? "#dc2626" : "#475569",
+            width: 14,
+            height: 14,
+          },
+        };
+      });
+    }
+
+    return nodes
+      .filter((n) => n.parent_wallet)
       .map((n) => {
-        const edgeKey = `${n.parentId}->${n.id}`;
+        const id = n.wallet_id || (n as any).walletId;
+        const edgeKey = `${n.parent_wallet}->${id}`;
         const isActive = activeBranch.branchEdges.has(edgeKey);
 
         return {
           id: edgeKey,
-          source: n.parentId as string,
-          target: n.id,
-          type: "default",
+          source: n.parent_wallet as string,
+          target: id,
+          type: "smoothstep",
           animated: isActive,
           style: {
-            stroke: isActive ? "#f59e0b" : "#475569",
-            strokeWidth: isActive ? 2 : 1.5,
+            stroke: isActive ? "#dc2626" : "#475569",
+            strokeWidth: isActive ? 2.5 : 1.5,
           },
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: isActive ? "#f59e0b" : "#475569",
-            width: 12,
-            height: 12,
+            color: isActive ? "#dc2626" : "#475569",
+            width: 14,
+            height: 14,
           },
         };
       });
-  }, [activeBranch, positionalNodes]);
+  }, [activeBranch, nodes, customEdges]);
 
   return (
     <div className="flex flex-col h-full justify-between select-none font-sans">
@@ -158,7 +196,7 @@ export function PeelChainFlow({ activeWalletId, onSelectWallet, nodes, puppeteer
             Peel-Chain Topology
           </span>
           <span className="text-[11px] text-zinc-400">
-            DAG · {nodes.length} Hops · {nodes.length} Nodes
+            DAG · {nodes.length} Nodes · Branching Matrix
           </span>
         </div>
 
@@ -170,7 +208,7 @@ export function PeelChainFlow({ activeWalletId, onSelectWallet, nodes, puppeteer
             <span className="w-2 h-2 rounded-full bg-amber-500/80 inline-block" /> OTC Gateway
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-amber-500 inline-block shadow-[0_0_6px_rgba(245,158,11,0.6)]" /> Active Trace
+            <span className="w-2 h-2 rounded-full bg-red-500 inline-block shadow-[0_0_6px_rgba(239,68,68,0.8)]" /> Active Trace
           </span>
         </div>
       </div>
@@ -179,16 +217,16 @@ export function PeelChainFlow({ activeWalletId, onSelectWallet, nodes, puppeteer
       <div className="relative flex-1 bg-[#0d0e12] border border-zinc-800/80 rounded-lg overflow-hidden min-h-[380px]">
         <ReactFlow
           nodes={rfNodes}
-          edges={edges}
+          edges={rfEdges}
           nodeTypes={nodeTypes}
           onNodeClick={(_, node) => onSelectWallet(node.id)}
           fitView
-          fitViewOptions={{ padding: 0.15 }}
-          minZoom={0.5}
+          fitViewOptions={{ padding: 0.2 }}
+          minZoom={0.05}
           maxZoom={1.5}
-          defaultEdgeOptions={{ type: "default" }}
+          defaultEdgeOptions={{ type: "smoothstep" }}
         >
-          <Background color="#1e2230" gap={20} size={1} />
+          <Background color="#1e2230" gap={24} size={1} />
           <Controls position="top-right" showInteractive={false} />
         </ReactFlow>
       </div>
@@ -235,5 +273,13 @@ export function PeelChainFlow({ activeWalletId, onSelectWallet, nodes, puppeteer
         </div>
       </div>
     </div>
+  );
+}
+
+export function PeelChainFlow(props: PeelChainFlowProps) {
+  return (
+    <ReactFlowProvider>
+      <FlowInner {...props} />
+    </ReactFlowProvider>
   );
 }

@@ -16,16 +16,9 @@ const SLEEP_PRESETS = [
   { label: "Tokyo / UTC+9 (14:00 – 21:00 UTC)", start: 14, end: 21 },
 ];
 
-const EXPLOIT_OPTIONS = [
-  "VaultV2: Unchecked Reentrancy Exploit",
-  "BridgeRelay: Flash Loan Oracle Manipulation",
-  "TreasuryDAO: Multisig Signature Bypass",
-];
-
 const MIXER_ROUTES = [
-  "Railgun Shielded Pool → Bitzlato OTC Desk",
-  "Tornado Cash (100 ETH Pools) → P2P Off-Ramp",
-  "Cross-Chain Hop (Ethereum → Arbitrum → Monero)",
+  "Railgun Shielded Pool",
+  "Tornado Cash",
 ];
 
 import { BASE_URL } from "../services/api";
@@ -37,7 +30,6 @@ export default function HackerTerminal() {
   const [boastMsg, setBoastMsg] = useState(
     "Drained the vault in 4 blocks. Fractured across mixers. Good luck tracing this lmao."
   );
-  const [exploitType, setExploitType] = useState(EXPLOIT_OPTIONS[0]);
   const [amountUsd, setAmountUsd] = useState(42000000);
   const [mixerRoute, setMixerRoute] = useState(MIXER_ROUTES[0]);
   const [fractureDepth, setFractureDepth] = useState(38);
@@ -53,10 +45,13 @@ export default function HackerTerminal() {
       amount_usd: amountUsd,
       sleep_start_hour: SLEEP_PRESETS[sleepPreset].start,
       sleep_end_hour: SLEEP_PRESETS[sleepPreset].end,
-      exploit_type: exploitType,
+      exploit_type: "Smart Contract Exploit (PS-02)",
+      target_protocol: "Smart Contract Exploit (PS-02)",
       boast_message: boastMsg,
+      mixer_type: mixerRoute,
       mixer_route: mixerRoute,
-      peel_chain_depth: fractureDepth,
+      wallet_splits: Number(fractureDepth),
+      peel_chain_depth: Number(fractureDepth),
     };
 
     try {
@@ -221,17 +216,14 @@ export default function HackerTerminal() {
               <label className="text-xs font-mono text-zinc-400 block mb-2">
                 Vulnerability Target
               </label>
-              <select
-                value={exploitType}
-                onChange={(e) => setExploitType(e.target.value)}
-                className="w-full bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-3.5 text-xs text-white font-mono focus:border-red-500/60 focus:ring-1 focus:ring-red-500/20 transition-all outline-none cursor-pointer"
-              >
-                {EXPLOIT_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt} className="bg-[#0e1017] text-zinc-200">
-                    {opt}
-                  </option>
-                ))}
-              </select>
+              <div className="w-full bg-black/40 backdrop-blur-xl border border-red-500/30 rounded-2xl p-3.5 flex items-center justify-between shadow-[0_0_15px_rgba(239,68,68,0.1)]">
+                <span className="text-xs text-red-200 font-mono font-medium">
+                  Vulnerability: Smart Contract Exploit (PS-02)
+                </span>
+                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-red-500/20 text-red-300 border border-red-500/30">
+                  LOCKED PS-02
+                </span>
+              </div>
             </div>
 
             <div>
@@ -309,7 +301,7 @@ export default function HackerTerminal() {
               </div>
               <input
                 type="range"
-                min={10}
+                min={4}
                 max={50}
                 value={fractureDepth}
                 onChange={(e) => setFractureDepth(Number(e.target.value))}

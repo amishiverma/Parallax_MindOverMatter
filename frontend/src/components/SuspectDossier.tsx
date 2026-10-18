@@ -16,17 +16,16 @@ interface SuspectDossierProps {
 export function SuspectDossier({ suspects }: SuspectDossierProps) {
 
   // Top suspect from leaderboard (index 0)
-  const topSuspect = suspects[0];
+  const topSuspect = suspects?.[0];
 
-  const suspectAlias = topSuspect?.suspect_alias || "Aleksei Voronin";
-  const suspectShortId = topSuspect?.suspect_alias?.match(/\((.*)\)/)?.[1] || "@0x_Alek";
-  const guiltScore = topSuspect?.guilt_score_percentage ?? 94.8;
-  const hourlyBins: HourlyBin[] = topSuspect?.matched_bedtime_chart ?? [];
-  const evidenceLog = topSuspect?.evidence_log ?? [];
+  const suspectAlias = topSuspect?.suspect_alias || "@Phantom_0x";
+  // Normalize guilt score to 0-100% integer scale for the guilt dial
+  const guiltScore = Math.min(100, Math.max(0, Math.round(topSuspect?.guilt_score_percentage ?? 95)));
+  const hourlyBins: HourlyBin[] = Array.isArray(topSuspect?.matched_bedtime_chart) ? topSuspect.matched_bedtime_chart : [];
+  const evidenceLog: string[] = Array.isArray(topSuspect?.evidence_log) ? topSuspect.evidence_log : [];
 
-  const sleepWindow = topSuspect?.matched_bedtime_chart?.filter((b) => b.suspect_posts === 0 && b.wallet_txs === 0);
-  const sleepStart = sleepWindow?.[0]?.hour;
-  const sleepEnd = sleepWindow?.[sleepWindow.length - 1]?.hour;
+  const sleepStart = typeof topSuspect?.sleep_start_hour === "number" ? topSuspect.sleep_start_hour : 4;
+  const sleepEnd = typeof topSuspect?.sleep_end_hour === "number" ? topSuspect.sleep_end_hour : 11;
 
   const [hoveredHour, setHoveredHour] = useState<HourlyBin | null>(null);
 
@@ -53,13 +52,10 @@ export function SuspectDossier({ suspects }: SuspectDossierProps) {
                 {suspectAlias}
               </h2>
               <div className="flex items-center gap-2 text-[11px] text-zinc-400 mt-0.5 font-sans">
-                <span className="text-zinc-300 font-mono font-medium">{suspectShortId}</span>
+                <span className="text-zinc-300 font-mono font-medium">{suspectAlias}</span>
                 <span>·</span>
                 <span className="flex items-center gap-1 text-zinc-400">
-                  <MapPin className="w-3 h-3" /> {sleepStart != null && sleepEnd != null
-                    ? `${sleepStart}:00 - ${sleepEnd}:00 Sleep Cycle`
-                    : "Moscow, UTC+3"
-                  }
+                  <MapPin className="w-3 h-3" /> {`${sleepStart}:00 - ${sleepEnd}:00 Sleep Cycle`}
                 </span>
               </div>
             </div>
@@ -115,7 +111,7 @@ export function SuspectDossier({ suspects }: SuspectDossierProps) {
           {/* Dormancy Window Banner - Warm Amber Tone */}
           <div className="bg-amber-500/[0.04] border border-amber-500/20 rounded px-2.5 py-1.5 mb-2 text-[11px] flex justify-between items-center text-zinc-300 font-sans">
             <span className="font-medium text-zinc-200">
-              Dormancy Window {sleepStart != null && sleepEnd != null ? `(${sleepStart}:00 - ${sleepEnd}:00 UTC)` : "(04:00 - 11:00 UTC)"}
+              {`Dormancy Window (${sleepStart}:00 - ${sleepEnd}:00 UTC)`}
             </span>
             <span className="text-[10px] text-amber-400/90 font-mono font-medium">Moscow UTC+3 Sync</span>
           </div>
@@ -132,10 +128,42 @@ export function SuspectDossier({ suspects }: SuspectDossierProps) {
               {/* Shaded Dormant Window */}
               {sleepStart != null && sleepEnd != null && (
                 <>
-                  <rect x={(sleepStart / 24) * 240} y="0" width={(((sleepEnd - sleepStart) / 24) * 240)} height="70" fill="url(#crosshatch-dormancy)" rx="2" />
-                  <rect x={(sleepStart / 24) * 240} y="0" width={(((sleepEnd - sleepStart) / 24) * 240)} height="70" fill="#f59e0b" fillOpacity="0.03" />
-                  <line x1={(sleepStart / 24) * 240} y1="0" x2={(sleepStart / 24) * 240} y2="70" stroke="#f59e0b" strokeWidth="0.8" strokeDasharray="2 2" opacity="0.35" />
-                  <line x1={(sleepEnd / 24) * 240} y1="0" x2={(sleepEnd / 24) * 240} y2="70" stroke="#f59e0b" strokeWidth="0.8" strokeDasharray="2 2" opacity="0.35" />
+                  <rect
+                    x={(sleepStart / 24) * 240}
+                    y="0"
+                    width={(((sleepEnd >= sleepStart ? sleepEnd - sleepStart : 24 - sleepStart + sleepEnd) / 24) * 240)}
+                    height="70"
+                    fill="url(#crosshatch-dormancy)"
+                    rx="2"
+                  />
+                  <rect
+                    x={(sleepStart / 24) * 240}
+                    y="0"
+                    width={(((sleepEnd >= sleepStart ? sleepEnd - sleepStart : 24 - sleepStart + sleepEnd) / 24) * 240)}
+                    height="70"
+                    fill="#f59e0b"
+                    fillOpacity="0.03"
+                  />
+                  <line
+                    x1={(sleepStart / 24) * 240}
+                    y1="0"
+                    x2={(sleepStart / 24) * 240}
+                    y2="70"
+                    stroke="#f59e0b"
+                    strokeWidth="0.8"
+                    strokeDasharray="2 2"
+                    opacity="0.35"
+                  />
+                  <line
+                    x1={(sleepEnd / 24) * 240}
+                    y1="0"
+                    x2={(sleepEnd / 24) * 240}
+                    y2="70"
+                    stroke="#f59e0b"
+                    strokeWidth="0.8"
+                    strokeDasharray="2 2"
+                    opacity="0.35"
+                  />
                 </>
               )}
 
@@ -147,10 +175,13 @@ export function SuspectDossier({ suspects }: SuspectDossierProps) {
                 const colSpacing = 10;
                 const x = d.hour * colSpacing + 1.5;
 
-                const postHeight = (d.suspect_posts / 15) * 58;
-                const txHeight = (d.wallet_txs / 18) * 60;
+                const isDormant = sleepStart <= sleepEnd
+                  ? (d.hour >= sleepStart && d.hour < sleepEnd)
+                  : (d.hour >= sleepStart || d.hour < sleepEnd);
 
-                const isDormant = d.suspect_posts === 0 && d.wallet_txs === 0;
+                // Zero-height bars during sleep window
+                const postHeight = isDormant ? 0 : (d.suspect_posts / 15) * 58;
+                const txHeight = isDormant ? 0 : (d.wallet_txs / 18) * 60;
 
                 return (
                   <g
@@ -168,7 +199,7 @@ export function SuspectDossier({ suspects }: SuspectDossierProps) {
                       y={70 - postHeight}
                       width="3"
                       height={postHeight}
-                      fill={isDormant ? "#3f3f46" : "#71717a"}
+                      fill={isDormant ? "transparent" : "#71717a"}
                       rx="0.5"
                     />
 
@@ -178,7 +209,7 @@ export function SuspectDossier({ suspects }: SuspectDossierProps) {
                       y={70 - txHeight}
                       width="3"
                       height={txHeight}
-                      fill={isDormant ? "#78350f" : "#d97706"}
+                      fill={isDormant ? "transparent" : "#d97706"}
                       rx="0.5"
                     />
                   </g>
@@ -189,8 +220,8 @@ export function SuspectDossier({ suspects }: SuspectDossierProps) {
             {/* Hour Markers strictly in font-mono */}
             <div className="flex justify-between text-[9px] text-zinc-400 font-mono mt-1 px-0.5">
               <span>00:00</span>
-              <span className="text-amber-400/90 font-medium">{sleepStart != null ? `${String(sleepStart).padStart(2, "0")}:00 (Sleep)` : "04:00 (Sleep)"}</span>
-              <span className="text-amber-400/90 font-medium">{sleepEnd != null ? `${String(sleepEnd).padStart(2, "0")}:00` : "11:00"}</span>
+              <span className="text-amber-400/90 font-medium">{`${String(sleepStart).padStart(2, "0")}:00 (Sleep)`}</span>
+              <span className="text-amber-400/90 font-medium">{`${String(sleepEnd).padStart(2, "0")}:00`}</span>
               <span>18:00</span>
               <span>23:00</span>
             </div>
@@ -214,7 +245,7 @@ export function SuspectDossier({ suspects }: SuspectDossierProps) {
           <ul className="space-y-2 text-[11px] text-zinc-300 leading-relaxed font-sans">
             {evidenceLog.map((item, idx) => (
               <li key={idx} className="flex items-start gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-zinc-500 mt-1.5 shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.8)] mt-1.5 shrink-0" />
                 <span>{item}</span>
               </li>
             ))}

@@ -81,9 +81,19 @@ class AttackLaunchRequest(BaseModel):
         default="Railgun Shielded Pool → Bitzlato OTC Desk",
         description="Mixer & Obfuscation Route",
     )
+    mixer_type: str = Field(
+        default="Tornado Cash (100 ETH Pool)",
+        description="Mixer type for Hop 1 node labeling",
+    )
+    wallet_splits: int = Field(
+        default=38,
+        ge=1,
+        le=50,
+        description="Number of exit wallets in Hop 2",
+    )
     peel_chain_depth: int = Field(
         default=38,
-        ge=10,
+        ge=1,
         le=50,
         description="Peel-Chain fracture depth (micro-wallets count)",
     )
@@ -125,6 +135,8 @@ def generate_simulated_blockchain_txs(
     exploit_type: str = "Reentrancy Exploit",
     target_protocol: str = "VaultV2: Unchecked Reentrancy Exploit",
     mixer_route: str = "Railgun Shielded Pool → Bitzlato OTC Desk",
+    mixer_type: str = "Tornado Cash (100 ETH Pool)",
+    wallet_splits: int = 38,
     peel_chain_depth: int = 38,
 ) -> list[dict[str, Any]]:
     """
@@ -142,17 +154,20 @@ def generate_simulated_blockchain_txs(
     hex_seed = secrets.token_hex(4).upper()
     root_wallet = f"0x{hex_seed}_ROOT_{target_protocol.split(':')[0].strip().upper()}"
 
-    # Determine mixer hops from route
-    route_lower = mixer_route.lower()
-    if "tornado" in route_lower:
-        mixer_tags = ["TORNADO_POOL", "RELAY_HOP_1", "RELAY_HOP_2"]
-    elif "monero" in route_lower or "cross-chain" in route_lower or "arbitrum" in route_lower:
-        mixer_tags = ["ETH_BRIDGE", "ARB_SYNAPSE", "XMR_SWAP"]
+    # Determine Hop 1 mixer tags and Hop 2 exit wallet count from mixer type
+    mixer_type_lower = mixer_type.lower()
+    if "tornado" in mixer_type_lower:
+        hop1_tags = ["TORNADO_100ETH", "MIXER_RELAY"]
+        exit_count = max(2, min(50, wallet_splits))
+    elif "cross-chain" in mixer_type_lower or "crosschain" in mixer_type_lower:
+        hop1_tags = ["ETH_BRIDGE", "ARB_SYNAPSE"]
+        exit_count = max(2, min(50, wallet_splits))
     else:
-        mixer_tags = ["RAILGUN_POOL", "BITZLATO_OTC", "HOP_FINAL"]
+        hop1_tags = ["RAILGUN_POOL", "BITZLATO_OTC"]
+        exit_count = max(2, min(50, wallet_splits))
 
-    mixer_wallets = [f"0x{hex_seed}_{tag}" for tag in mixer_tags]
-    exit_wallets = [f"0x{hex_seed}_BURNER_{i+1:02d}" for i in range(peel_chain_depth)]
+    mixer_wallets = [f"0x{hex_seed}_{tag}" for tag in hop1_tags]
+    exit_wallets = [f"0x{hex_seed}_EXIT_{i+1:02d}" for i in range(exit_count)]
 
     now = datetime.now(timezone.utc)
     base_date = now - timedelta(days=4)
@@ -248,9 +263,28 @@ def generate_simulated_osint_chatter(
 
     posts: list[dict[str, Any]] = []
 
-    # ── Attacker Posts ────────────────────────────────────────────────────────
+    # ── Attacker Intent Evaluation ───────────────────────────────────────────
+    from backend.osint_engine.parser import classify_intent
+
+    user_intent = classify_intent(boast_message)
+    is_user_boasting = user_intent != "neutral" or (len(boast_message) >= 12 and " " not in boast_message)
+    live_intent = user_intent if user_intent != "neutral" else ("boast" if is_user_boasting else "neutral")
+
+    # Pin the user's exact live boast message at the very front with the latest timestamp
+    posts.append({
+        "post_id": f"{attacker_alias.replace('@', '')}_LIVE",
+        "author": attacker_alias,
+        "platform": "darkweb_forum",
+        "timestamp_utc": now.isoformat(),
+        "hour_utc": now.hour,
+        "intent": live_intent,
+        "is_flagged": live_intent != "neutral",
+        "message": boast_message,
+        "timezone_hint": "UTC+0",
+    })
+
     attacker_boasts = [
-        f"{boast_message} {target_protocol} drained cleanly.",
+        f"{target_protocol} drained cleanly.",
         f"we drained it clean lmaooo, ${amount_usd:,.0f} moved via {mixer_route} 🔥",
         f"absolute rug on {target_protocol}, no forensics can touch this {exploit_type}",
         "cleanest hack this quarter no cap, nobody is catching this ghost",
@@ -273,6 +307,8 @@ def generate_simulated_osint_chatter(
     attacker_neutrals = [
         "anyone noticing gas fee spikes on the relayers?",
         "staying off-chain for a bit, see you around",
+        "just checking the block explorer for routine transfers",
+        "node synchronization looking healthy today",
     ]
 
     # Generate 60 posts for attacker across active hours
@@ -284,17 +320,22 @@ def generate_simulated_osint_chatter(
         )
 
         if i == 0:
-            msg = f"{boast_message} {target_protocol} drained. ${amount_usd:,.0f} split through {mixer_route}!"
-            intent = "boast"
-        elif i % 2 == 1:
-            msg = random.choice(attacker_boasts)
-            intent = "boast"
-        elif i % 10 == 0:
+            # Post 0 is STRICTLY what the user typed:
+            msg = boast_message
+            intent = live_intent
+            ts = datetime.now(timezone.utc) + timedelta(minutes=1)
+        elif is_user_boasting:
+            # If user bragged, generate incriminating evidence
+            if i % 2 == 1:
+                msg = random.choice(attacker_boasts)
+                intent = "boast"
+            else:
+                msg = random.choice(attacker_panics)
+                intent = "panic"
+        else:
+            # If user typed 'hi' or neutral, keep their chatter innocent!
             msg = random.choice(attacker_neutrals)
             intent = "neutral"
-        else:
-            msg = random.choice(attacker_panics)
-            intent = "panic"
 
         posts.append({
             "post_id": f"{attacker_alias.replace('@', '')}_{i:04d}",
@@ -303,10 +344,10 @@ def generate_simulated_osint_chatter(
             "timestamp_utc": ts.isoformat(),
             "hour_utc": ts.hour,
             "intent": intent,
+            "is_flagged": intent in ("boast", "panic", "panic_evasion"),
             "message": msg,
             "timezone_hint": "UTC+0",
         })
-
     # ── 4 Decoy Suspects ──────────────────────────────────────────────────────
     decoys = [
         {
@@ -422,6 +463,8 @@ class SimulationEngine:
             exploit_type=req.exploit_type,
             target_protocol=req.target_protocol,
             mixer_route=req.mixer_route,
+            mixer_type=req.mixer_type,
+            wallet_splits=req.wallet_splits,
             peel_chain_depth=req.peel_chain_depth,
         )
 

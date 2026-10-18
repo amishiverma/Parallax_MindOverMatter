@@ -193,6 +193,30 @@ frontend/
 
 ---
 
+## 🚨 Emergency Recovery & End-to-End Stabilization Sprint (Gravitas Protocol)
+
+| Phase | Description | Status | Verification Target |
+|---|---|---|---|
+| **Phase 1** | Crash Elimination & Polling Resilience (`App.tsx` & `api.ts`) | ✅ Complete | Unbroken 1.5s persistent interval, safe AudioContext, defensive null-coalescing |
+| **Phase 2** | Live Runtime Payload Adapters (`api.ts`) | ✅ Complete | Exact FastAPI JSON schema mappings (nodes, edges, keyword_hits object flattening, leaderboard) |
+| **Phase 3** | Graph Auto-Layout Repair (`PeelChainFlow.tsx`) | ✅ Complete | Guaranteed non-zero `{ position: { x, y } }`, deterministic columns (`hop*300+60`, `idx*90+60`), `fitView()` |
+| **Phase 4** | Suspect Dossier Dynamic Normalization (`SuspectDossier.tsx`) | ✅ Complete | Live handle binding, 0-100% integer guilt dial, defensive sleep blackout bars |
+| **Phase 5** | Verification Gate & End-to-End Attack Test | ✅ Complete | Full attack loop passed: `/alerts/latest`, OSINT boast post, 42-node DAG, suspect dossier |
+
+---
+
+## 🎯 Gravitas Protocol: Surgical Mandate (Faults 1 – 4)
+
+| Phase | Description | Status | Verification Target |
+|---|---|---|---|
+| **Phase 1** | Attacker Terminal Payload & Cleanup (`HackerTerminal.tsx`) | ✅ Complete | Pure user input in `boast_message`, fixed PS-02 badge, pass `mixer_type` & `wallet_splits` (slider min lowered) |
+| **Phase 2** | Dynamic Attack Generator (`simulation.py` & schemas) | ⏳ In Progress | Hop 1 dynamic mixer label ("Railgun" vs "Tornado"), Hop 2 exact `wallet_splits` exits, clean boast message |
+| **Phase 3** | Dynamic Intent Scoring & Cipher Decoder (`parser.py`) | ⏳ In Planning | Base64/Hex detector, auto-decode to ASCII, evasion tags, neutral intent drops guilt to ~75%, boast pushes to ~98% |
+| **Phase 4** | OSINT Auto-Decoded Payload Display (`api.ts` & `App.tsx`) | ⏳ In Planning | Monospace raw ciphertext, glowing `[🔓 AUTO-DECODED (Base64/Hex)]` badge, flagged keyword pills |
+| **Phase 5** | End-to-End Verification Protocol | ⏳ In Planning | 1. "hi" -> ~75% guilt; 2. slider=8 -> 8 exits; 3. Base64 "NDJNIGRyYWluZWQgbG1hbw==" -> decoded + 98% guilt |
+
+---
+
 ## ⏳ Next Steps / Open Items
 
 | # | Item | Who | Priority |
@@ -205,3 +229,4 @@ frontend/
 | 6 | Add WebSocket live feed to `DragnetBoard` once backend ready | Amishi | Medium |
 | 7 | Performance audit – Canvas FPS profiling | Amishi | Medium |
 | 8 | Mobile responsive pass | Amishi | Low |
+

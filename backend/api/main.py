@@ -128,11 +128,12 @@ def _osint_feed_handler(
     if author:
         enriched = [p for p in enriched if p["author"].lower() == author.lower()]
 
+    enriched.sort(key=lambda p: p.get("timestamp_utc", ""), reverse=True)
     enriched = enriched[:limit]
+
     profiles = build_author_profiles(enriched)
     sleep_cycles = analyze_sleep_cycles(enriched)
 
-    # Merge sleep info into profiles
     for handle, cycle in sleep_cycles.items():
         if handle in profiles:
             profiles[handle]["sleep_window"] = cycle["inactivity_window"]
