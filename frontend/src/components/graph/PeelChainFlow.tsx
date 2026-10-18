@@ -55,7 +55,7 @@ const nodeTypes = {
   walletNode: WalletNode,
 };
 
-export function PeelChainFlow({ activeWalletId, onSelectWallet, nodes, puppeteerClusters }: PeelChainFlowProps) {
+export function PeelChainFlow({ activeWalletId, onSelectWallet, nodes, puppeteerClusters: _puppeteerClusters }: PeelChainFlowProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [replayOffset, setReplayOffset] = useState(192);
 

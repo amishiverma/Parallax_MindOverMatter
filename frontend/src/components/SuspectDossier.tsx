@@ -1,7 +1,7 @@
 import { useState } from "react";
 import NumberFlow from "@number-flow/react";
 import { Shield, MapPin, Clock, Fingerprint, ExternalLink } from "lucide-react";
-import { SuspectLeaderboardItem } from "../services/api";
+import type { SuspectLeaderboardItem } from "../services/api";
 
 interface HourlyBin {
   hour: number;
@@ -183,7 +183,7 @@ export function SuspectDossier({ suspects }: SuspectDossierProps) {
                     />
                   </g>
                 );
-              )}
+              })}
             </svg>
 
             {/* Hour Markers strictly in font-mono */}
