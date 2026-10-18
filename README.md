@@ -27,7 +27,7 @@
   <img src="assets/screenshot.png" width="100%" alt="Parallax Forensic War Room & 3D Scrollytelling" style="border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.8);" />
 </p>
 <p align="center">
-  <em>Figure 1: Parallax Forensic War Room — Hardware-Accelerated 300-Frame Scrollytelling & Multi-Signal Intelligence Fusion.</em>
+  <em>Figure 1: Parallax Forensic War Room — Live Cyberpunk UI with Hardware-Accelerated 3D Scrollytelling, $42M Threat Counter, and Adversary Console Launcher.</em>
 </p>
 
 ---
