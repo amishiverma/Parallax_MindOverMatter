@@ -34,7 +34,7 @@ export function SuspectDossier() {
       {/* Main Dossier Content */}
       <div className="flex-1 overflow-y-auto space-y-3 pr-1">
         {/* Suspect Target Card */}
-        <div className="bg-[#14161f] border border-zinc-800/80 rounded-lg p-3.5 hover:border-zinc-700 transition-colors duration-200">
+        <div id="tour-attribution" className="bg-[#14161f] border border-zinc-800/80 rounded-lg p-3.5 hover:border-zinc-700 transition-colors duration-200">
           <div className="flex justify-between items-start mb-2.5">
             <div>
               <span className="text-[11px] text-zinc-400 font-medium block">
@@ -85,7 +85,7 @@ export function SuspectDossier() {
         </div>
 
         {/* 24-Hour Circadian Dormancy Histogram (SVG Dual-Series) */}
-        <div className="bg-[#14161f] border border-zinc-800/80 rounded-lg p-3.5 hover:border-zinc-700 transition-colors duration-200">
+        <div id="tour-circadian" className="bg-[#14161f] border border-zinc-800/80 rounded-lg p-3.5 hover:border-zinc-700 transition-colors duration-200">
           <div className="flex justify-between items-center mb-1.5 font-sans">
             <span className="text-xs text-zinc-100 font-semibold flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-zinc-400" /> Circadian Dormancy Match
@@ -189,7 +189,7 @@ export function SuspectDossier() {
         </div>
 
         {/* Forensic Evidence Logs with Clean Neutral Bullet Points */}
-        <div className="bg-[#14161f] border border-zinc-800/80 rounded-lg p-3.5 space-y-2 hover:border-zinc-700 transition-colors duration-200 font-sans">
+        <div id="tour-proof" className="bg-[#14161f] border border-zinc-800/80 rounded-lg p-3.5 space-y-2 hover:border-zinc-700 transition-colors duration-200 font-sans">
           <span className="text-xs text-zinc-100 font-semibold flex items-center gap-1.5 mb-1">
             <Fingerprint className="w-3.5 h-3.5 text-zinc-400" /> Correlated Proof Vectors
           </span>

@@ -5,6 +5,7 @@ import { PeelChainFlow } from "./components/graph/PeelChainFlow";
 import { SuspectDossier } from "./components/SuspectDossier";
 import { FloatingNavbar } from "./components/FloatingNavbar";
 import { ForensicArchitecture } from "./components/ForensicArchitecture";
+import { WorkbenchTour } from "./components/WorkbenchTour";
 import { useForensicData } from "./services/api";
 import {
   Search,
@@ -72,7 +73,7 @@ export default function App() {
       {activeView === "workbench" && (
         <main id="workbench" className="p-4 md:p-6 pt-24 md:pt-28 space-y-4">
           {/* Workbench Header Bar */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-3 border-b border-zinc-800/80 text-xs gap-3 font-sans">
+          <div id="tour-telemetry" className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-3 border-b border-zinc-800/80 text-xs gap-3 font-sans">
             <div className="flex items-center gap-3">
               <span className="font-semibold text-zinc-100 text-sm">
                 Forensic Investigation — Case #42M-DEFI-HEIST
@@ -98,13 +99,15 @@ export default function App() {
                 <span className="text-zinc-400">Algorithm:</span>
                 <span className="text-zinc-200 font-medium">Time-Delta Fusion Engine</span>
               </div>
+              <span className="text-zinc-600">·</span>
+              <WorkbenchTour />
             </div>
           </div>
 
           {/* 3-Column Stepped Workbench Hierarchy: 25% | 50% | 25% */}
           <div className="grid grid-cols-12 gap-4 h-[calc(100vh-140px)] min-h-[640px]">
             {/* PANEL 1 (Left 25% - col-span-3): OSINT Stream */}
-            <div className="col-span-12 lg:col-span-3 bg-[#14161f] border border-zinc-800/80 rounded-xl p-3.5 flex flex-col justify-between text-xs font-sans">
+            <div id="tour-osint" className="col-span-12 lg:col-span-3 bg-[#14161f] border border-zinc-800/80 rounded-xl p-3.5 flex flex-col justify-between text-xs font-sans">
               <div>
                 <div className="flex justify-between items-center border-b border-zinc-800/80 pb-2.5 mb-3 font-sans">
                   <span className="text-zinc-200 font-semibold text-xs tracking-tight flex items-center gap-1.5">
@@ -180,7 +183,7 @@ export default function App() {
             </div>
 
             {/* PANEL 2 (Middle 50% - col-span-6): Topological Peel-Chain Graph (@xyflow/react) */}
-            <div className="col-span-12 lg:col-span-6 bg-[#14161f] border border-zinc-800/80 rounded-xl p-3.5 flex flex-col justify-between text-xs overflow-hidden">
+            <div id="tour-topology" className="col-span-12 lg:col-span-6 bg-[#14161f] border border-zinc-800/80 rounded-xl p-3.5 flex flex-col justify-between text-xs overflow-hidden">
               <PeelChainFlow
                 activeWalletId={activeWalletId}
                 onSelectWallet={handleSelectWallet}

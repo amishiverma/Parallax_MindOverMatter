@@ -180,9 +180,11 @@ frontend/
     - Aligned [PeelChainFlow.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/graph/PeelChainFlow.tsx) into 3 clean horizontal stages (Stage 1 Genesis Vault -> Stage 2 3-Hop Splits -> Stage 3 3-Hop Gateways).
     - Added animated amber running arrows (`stroke: #f59e0b`, `strokeDasharray: "6,4"`) with directional arrowheads along active trace branches.
     - Simplified header and legend: `Peel-Chain Topology · 3 Hops (38 Splits)` | `○ Intermediary Node` · `● OTC Gateway (Amber)` · `─ Active Path`.
-  - **Brand Logo Relocation & Minimalist Underline Navbar:**
-    - Repositioned the Parallax logo (`/logo1.png`) into a standalone fixed top-left corner container (`fixed top-6 left-6 md:left-10 z-50 pointer-events-auto`) with subtle hover micro-scale.
-    - Removed the dark pill capsule background container ("back label") around the navigation tabs, giving a completely frameless floating nav bar with a clean spring-animated active underline indicator (`motion.div layoutId="tabUnderline"`).
+  - **Interactive Spotlight Onboarding Tour ([WorkbenchTour.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/WorkbenchTour.tsx)):**
+    - Built a 6-step guided walkthrough with a minimalist `(?)` trigger button in the workbench top-right header bar.
+    - Implemented a dark transparent spotlight backdrop (`fixed inset-0 z-50 bg-black/85 backdrop-blur-[2px]`) elevating active targets with amber glow rings (`.tour-highlight`).
+    - Rendered floating pure white text without bulky cards or containers, with click / `[Space]` / `[ArrowRight]` keyboard advance and `[Esc]` cancellation.
+    - Linked all 6 forensic targets with designated IDs: `tour-osint`, `tour-topology`, `tour-attribution`, `tour-circadian`, `tour-proof`, and `tour-telemetry`.
 
 ---
 
