@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 
 export default function App() {
-  const { osint, correlations, isLiveBackend, isLoading } = useForensicData();
+  const { osint, nodes, correlations, suspects, isLiveBackend, isLoading } = useForensicData();
   const [activeView, setActiveView] = useState<"landing" | "workbench">("landing");
   const [activeCorr, setActiveCorr] = useState<string>("osint-101");
   const [activeWalletId, setActiveWalletId] = useState<string>("0x66f0...99bb");
@@ -184,12 +184,13 @@ export default function App() {
               <PeelChainFlow
                 activeWalletId={activeWalletId}
                 onSelectWallet={handleSelectWallet}
+                nodes={nodes}
               />
             </div>
 
             {/* PANEL 3 (Right 25% - col-span-3): Target Attribution & Circadian Analysis */}
             <div className="col-span-12 lg:col-span-3 bg-[#14161f] border border-zinc-800/80 rounded-xl p-3.5 flex flex-col justify-between text-xs overflow-hidden">
-              <SuspectDossier />
+              <SuspectDossier suspects={suspects} />
             </div>
           </div>
         </main>

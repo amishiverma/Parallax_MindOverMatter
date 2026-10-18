@@ -10,6 +10,9 @@ All endpoints are registered under both `/` and `/api/v1/` route prefixes:
   - /correlation/timeline & /api/v1/correlation/timeline
   - /suspects/leaderboard & /api/v1/suspects/leaderboard
   - /health & /api/v1/health
+  - /attack/launch & /api/v1/attack/launch
+  - /alerts/latest & /api/v1/alerts/latest
+  - /simulation/reset & /api/v1/simulation/reset
 """
 
 import json
@@ -20,6 +23,7 @@ from typing import Any
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 
 # ── Path bootstrap ─────────────────────────────────────────────────────────────
 ROOT = Path(__file__).parent.parent.parent
@@ -32,6 +36,7 @@ from backend.blockchain_engine.dormancy import analyze_blockchain_dormancy
 from backend.correlation_engine.correlator import run_correlation
 from backend.correlation_engine.timeline_builder import build_timeline
 from backend.tracker.timing_engine import detect_puppeteer_clusters
+from backend.tracker.attack_generator import generate_attack_simulation
 
 # ── App Init ───────────────────────────────────────────────────────────────────
 app = FastAPI(
@@ -52,10 +57,15 @@ app.add_middleware(
 
 DATA_DIR = ROOT / "backend" / "data" / "raw"
 
+# ── Active Simulation State (In-Memory Live Telemetry) ────────────────────────
+ACTIVE_SIMULATION: dict[str, Any] | None = None
+
 
 # ── Data Loaders ──────────────────────────────────────────────────────────────
 
 def _cached_osint_posts() -> list[dict]:
+    if ACTIVE_SIMULATION is not None and "posts" in ACTIVE_SIMULATION:
+        return ACTIVE_SIMULATION["posts"]
     path = DATA_DIR / "osint_chatter.json"
     if not path.exists():
         raise FileNotFoundError(f"osint_chatter.json not found at {path}. "
@@ -65,6 +75,8 @@ def _cached_osint_posts() -> list[dict]:
 
 
 def _cached_chain_txs() -> list[dict]:
+    if ACTIVE_SIMULATION is not None and "txs" in ACTIVE_SIMULATION:
+        return ACTIVE_SIMULATION["txs"]
     path = DATA_DIR / "blockchain_txs.json"
     if not path.exists():
         raise FileNotFoundError(f"blockchain_txs.json not found at {path}. "
@@ -77,6 +89,20 @@ def _handle_missing(exc: FileNotFoundError) -> JSONResponse:
     return JSONResponse(
         status_code=503,
         content={"error": "Data not available", "detail": str(exc)},
+    )
+
+
+# ── Pydantic Request Models ───────────────────────────────────────────────────
+
+class AttackLaunchRequest(BaseModel):
+    attacker_alias: str = Field(default="Ghost_Unknown", description="Custom suspect handle")
+    amount_usd: float = Field(default=42000000.0, description="Drained amount in USD")
+    sleep_start_hour: int = Field(default=4, ge=0, le=23, description="Sleep window start (0-23 UTC)")
+    sleep_end_hour: int = Field(default=11, ge=0, le=23, description="Sleep window end (0-23 UTC)")
+    exploit_type: str = Field(default="Reentrancy Exploit", description="Attack classification")
+    boast_message: str = Field(
+        default="42M drained and peeled across mixers.",
+        description="Public boast message published on dark web forums",
     )
 
 
@@ -237,6 +263,57 @@ def _suspects_leaderboard_handler(
     }
 
 
+def _launch_attack_handler(req: AttackLaunchRequest) -> dict[str, Any]:
+    """Generate dynamic attack telemetry and activate simulation state."""
+    global ACTIVE_SIMULATION
+    sim = generate_attack_simulation(
+        attacker_alias=req.attacker_alias,
+        amount_usd=req.amount_usd,
+        sleep_start_hour=req.sleep_start_hour,
+        sleep_end_hour=req.sleep_end_hour,
+        exploit_type=req.exploit_type,
+        boast_message=req.boast_message,
+    )
+    ACTIVE_SIMULATION = sim
+    return {
+        "status": "attack_launched",
+        "incident_id": sim["incident_id"],
+        "attacker_alias": sim["attacker_alias"],
+        "amount_usd": sim["amount_usd"],
+        "sleep_window": f"{sim['sleep_start_hour']:02d}:00 - {sim['sleep_end_hour']:02d}:00 UTC",
+        "exploit_type": sim["exploit_type"],
+        "total_posts": len(sim["posts"]),
+        "total_transactions": len(sim["txs"]),
+        "timestamp_utc": sim["timestamp_utc"],
+    }
+
+
+def _latest_alerts_handler() -> dict[str, Any]:
+    """Return real-time breach status."""
+    if ACTIVE_SIMULATION is not None:
+        return {
+            "is_under_attack": True,
+            "incident_id": ACTIVE_SIMULATION["incident_id"],
+            "attacker_alias": ACTIVE_SIMULATION["attacker_alias"],
+            "amount_usd": ACTIVE_SIMULATION["amount_usd"],
+            "timestamp_utc": ACTIVE_SIMULATION["timestamp_utc"],
+        }
+    return {
+        "is_under_attack": False,
+        "incident_id": "INC-BASELINE",
+        "attacker_alias": "None",
+        "amount_usd": 0.0,
+        "timestamp_utc": "",
+    }
+
+
+def _reset_simulation_handler() -> dict[str, str]:
+    """Reset simulation back to baseline disk mock datasets."""
+    global ACTIVE_SIMULATION
+    ACTIVE_SIMULATION = None
+    return {"status": "reset", "detail": "Simulation reset to baseline."}
+
+
 # ── Routes: dual registration (/ and /api/v1/) ────────────────────────────────
 
 @app.get("/health", tags=["Meta"])
@@ -279,6 +356,24 @@ def suspects_leaderboard(
     top_n: int = Query(10, ge=1, le=100, description="Number of top suspects to return"),
 ) -> dict[str, Any]:
     return _suspects_leaderboard_handler(top_n=top_n)
+
+
+@app.post("/attack/launch", tags=["Simulation"])
+@app.post("/api/v1/attack/launch", tags=["Simulation"])
+def launch_attack(payload: AttackLaunchRequest) -> dict[str, Any]:
+    return _launch_attack_handler(payload)
+
+
+@app.get("/alerts/latest", tags=["Simulation"])
+@app.get("/api/v1/alerts/latest", tags=["Simulation"])
+def latest_alerts() -> dict[str, Any]:
+    return _latest_alerts_handler()
+
+
+@app.post("/simulation/reset", tags=["Simulation"])
+@app.post("/api/v1/simulation/reset", tags=["Simulation"])
+def reset_simulation() -> dict[str, str]:
+    return _reset_simulation_handler()
 
 
 # ── Dev entry point ────────────────────────────────────────────────────────────

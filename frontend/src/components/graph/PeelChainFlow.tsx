@@ -10,136 +10,52 @@ import {
 import { WalletNode } from "./WalletNode";
 import { Play, Pause, RotateCcw } from "lucide-react";
 
-const nodeTypes = {
-  walletNode: WalletNode,
-};
+// Backend node shape (from /api/v1/blockchain/nodes endpoint)
+interface BackendNode {
+  wallet_id: string;
+  amount: number;
+  timestamp: string;
+  hop_level: number;
+  parent_wallet: string | null;
+  is_cashout_door: boolean;
+  label?: string;
+  mixerType?: string;
+  puppeteer_clusters?: string[];
+}
 
 interface PeelChainFlowProps {
   activeWalletId: string;
   onSelectWallet: (walletId: string) => void;
+  nodes: BackendNode[];
+  puppeteerClusters?: Record<string, string[]>;
 }
 
-interface RawNodeDef {
-  id: string;
-  label: string;
-  walletId: string;
-  amount: number;
-  hop: number;
-  isCashout: boolean;
-  mixerType?: string;
-  timestamp: string;
-  parentId: string | null;
-  x: number;
-  y: number;
-}
+// Convert a backend node into a positional node for the React Flow canvas
+const buildPositionalNode = (backendNode: BackendNode, index: number) => {
+  const hopLevel = backendNode.hop_level || 0;
+  const x = hopLevel * 300 + 30; // Horizontal spacing per hop
+  const y = (index % 4) * 140 + (hopLevel === 0 ? 190 : 30); // Stagger within hop level
+  return {
+    id: backendNode.wallet_id,
+    label: backendNode.label || `Wallet ${backendNode.wallet_id.slice(0, 6)}`,
+    walletId: backendNode.wallet_id,
+    amount: backendNode.amount,
+    hop: hopLevel,
+    isCashout: backendNode.is_cashout_door || false,
+    mixerType: backendNode.mixerType,
+    timestamp: backendNode.timestamp,
+    parentId: backendNode.parent_wallet || null,
+    puppeteer_clusters: backendNode.puppeteer_clusters || [],
+    x,
+    y,
+  };
+};
 
-const RAW_NODES: RawNodeDef[] = [
-  // Hop 0: Leftmost Genesis Exploit
-  {
-    id: "0x7a1b...4e92",
-    label: "Genesis Exploit Vault",
-    walletId: "0x7a1b...4e92",
-    amount: 42000000,
-    hop: 0,
-    isCashout: false,
-    timestamp: "02:14:02 UTC",
-    parentId: null,
-    x: 30,
-    y: 190,
-  },
-  // Hop 1: Three Intermediate Branches
-  {
-    id: "0x89f2...aa10",
-    label: "Bridge Relay Alpha",
-    walletId: "0x89f2...aa10",
-    amount: 14200000,
-    hop: 1,
-    isCashout: false,
-    timestamp: "02:15:33 UTC",
-    parentId: "0x7a1b...4e92",
-    x: 330,
-    y: 50,
-  },
-  {
-    id: "0x33b1...cc84",
-    label: "Split Liquidity Pool Beta",
-    walletId: "0x33b1...cc84",
-    amount: 18500000,
-    hop: 1,
-    isCashout: false,
-    timestamp: "02:16:11 UTC",
-    parentId: "0x7a1b...4e92",
-    x: 330,
-    y: 190,
-  },
-  {
-    id: "0x44d2...771e",
-    label: "Hotfix Bypass Route",
-    walletId: "0x44d2...771e",
-    amount: 9300000,
-    hop: 1,
-    isCashout: false,
-    timestamp: "02:16:48 UTC",
-    parentId: "0x7a1b...4e92",
-    x: 330,
-    y: 330,
-  },
-  // Hop 2: Four Terminating Nodes / OTC Cashout Doors
-  {
-    id: "0x91d4...01ff",
-    label: "Mixer Sub-Wallet C1",
-    walletId: "0x91d4...01ff",
-    amount: 9300000,
-    hop: 2,
-    isCashout: false,
-    mixerType: "Tornado Cash Pool",
-    timestamp: "02:17:15 UTC",
-    parentId: "0x89f2...aa10",
-    x: 630,
-    y: 15,
-  },
-  {
-    id: "0x66f0...99bb",
-    label: "Bitzlato OTC Desk",
-    walletId: "0x66f0...99bb",
-    amount: 4900000,
-    hop: 2,
-    isCashout: true,
-    mixerType: "Telegram OTC Broker",
-    timestamp: "02:18:02 UTC",
-    parentId: "0x89f2...aa10",
-    x: 630,
-    y: 125,
-  },
-  {
-    id: "0x55c3...11ea",
-    label: "Privacy Pool Hop D2",
-    walletId: "0x55c3...11ea",
-    amount: 9250000,
-    hop: 2,
-    isCashout: false,
-    mixerType: "Railgun Shielded Pool",
-    timestamp: "02:18:40 UTC",
-    parentId: "0x33b1...cc84",
-    x: 630,
-    y: 245,
-  },
-  {
-    id: "0x12a8...4409",
-    label: "P2P Settlement Door",
-    walletId: "0x12a8...4409",
-    amount: 9250000,
-    hop: 2,
-    isCashout: true,
-    mixerType: "P2P OTC Liquidity",
-    timestamp: "02:22:05 UTC",
-    parentId: "0x33b1...cc84",
-    x: 630,
-    y: 355,
-  },
-];
+const nodeTypes = {
+  walletNode: WalletNode,
+};
 
-export function PeelChainFlow({ activeWalletId, onSelectWallet }: PeelChainFlowProps) {
+export function PeelChainFlow({ activeWalletId, onSelectWallet, nodes, puppeteerClusters }: PeelChainFlowProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [replayOffset, setReplayOffset] = useState(192);
 
@@ -160,26 +76,33 @@ export function PeelChainFlow({ activeWalletId, onSelectWallet }: PeelChainFlowP
       .padStart(2, "0")} UTC)`;
   };
 
+  // Compute positional nodes from backend data
+  const positionalNodes = useMemo(() => {
+    return nodes.map((n, idx) => buildPositionalNode(n, idx));
+  }, [nodes]);
+
   // Find active node path to Genesis Root
   const activeBranch = useMemo(() => {
     const branchNodes = new Set<string>();
     const branchEdges = new Set<string>();
 
-    let current = RAW_NODES.find((n) => n.id === activeWalletId);
+    const nodeMap = new Map(positionalNodes.map((n) => [n.id, n]));
+    let current = nodeMap.get(activeWalletId);
+
     while (current) {
       branchNodes.add(current.id);
       if (current.parentId) {
         branchEdges.add(`${current.parentId}->${current.id}`);
       }
-      current = RAW_NODES.find((n) => n.id === current?.parentId);
+      current = current.parentId ? nodeMap.get(current.parentId) : undefined;
     }
 
     return { branchNodes, branchEdges };
-  }, [activeWalletId]);
+  }, [activeWalletId, positionalNodes]);
 
   // Construct React Flow Nodes
-  const nodes: Node[] = useMemo(() => {
-    return RAW_NODES.map((n) => ({
+  const rfNodes: Node[] = useMemo(() => {
+    return positionalNodes.map((n) => ({
       id: n.id,
       type: "walletNode",
       position: { x: n.x, y: n.y },
@@ -191,37 +114,40 @@ export function PeelChainFlow({ activeWalletId, onSelectWallet }: PeelChainFlowP
         isCashout: n.isCashout,
         mixerType: n.mixerType,
         timestamp: n.timestamp,
+        puppeteer_clusters: n.puppeteer_clusters,
         isSelected: activeWalletId === n.id,
         isInActivePath: activeBranch.branchNodes.has(n.id),
       },
     }));
-  }, [activeWalletId, activeBranch]);
+  }, [activeWalletId, activeBranch, positionalNodes]);
 
-  // Construct React Flow Edges with smooth SVG bezier curves and subtle amber pulse
+  // Construct React Flow Edges from parent_wallet relationships
   const edges: Edge[] = useMemo(() => {
-    return RAW_NODES.filter((n) => n.parentId).map((n) => {
-      const edgeKey = `${n.parentId}->${n.id}`;
-      const isActive = activeBranch.branchEdges.has(edgeKey);
+    return positionalNodes
+      .filter((n) => n.parentId)
+      .map((n) => {
+        const edgeKey = `${n.parentId}->${n.id}`;
+        const isActive = activeBranch.branchEdges.has(edgeKey);
 
-      return {
-        id: edgeKey,
-        source: n.parentId as string,
-        target: n.id,
-        type: "default", // smooth continuous SVG bezier curves
-        animated: isActive,
-        style: {
-          stroke: isActive ? "#f59e0b" : "#475569",
-          strokeWidth: isActive ? 2 : 1.5,
-        },
-        markerEnd: {
-          type: MarkerType.ArrowClosed,
-          color: isActive ? "#f59e0b" : "#475569",
-          width: 12,
-          height: 12,
-        },
-      };
-    });
-  }, [activeBranch]);
+        return {
+          id: edgeKey,
+          source: n.parentId as string,
+          target: n.id,
+          type: "default",
+          animated: isActive,
+          style: {
+            stroke: isActive ? "#f59e0b" : "#475569",
+            strokeWidth: isActive ? 2 : 1.5,
+          },
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+            color: isActive ? "#f59e0b" : "#475569",
+            width: 12,
+            height: 12,
+          },
+        };
+      });
+  }, [activeBranch, positionalNodes]);
 
   return (
     <div className="flex flex-col h-full justify-between select-none font-sans">
@@ -232,7 +158,7 @@ export function PeelChainFlow({ activeWalletId, onSelectWallet }: PeelChainFlowP
             Peel-Chain Topology
           </span>
           <span className="text-[11px] text-zinc-400">
-            DAG · 3 Hops · 38 Micro-Splits
+            DAG · {nodes.length} Hops · {nodes.length} Nodes
           </span>
         </div>
 
@@ -252,7 +178,7 @@ export function PeelChainFlow({ activeWalletId, onSelectWallet }: PeelChainFlowP
       {/* React Flow Graph Surface */}
       <div className="relative flex-1 bg-[#0d0e12] border border-zinc-800/80 rounded-lg overflow-hidden min-h-[380px]">
         <ReactFlow
-          nodes={nodes}
+          nodes={rfNodes}
           edges={edges}
           nodeTypes={nodeTypes}
           onNodeClick={(_, node) => onSelectWallet(node.id)}

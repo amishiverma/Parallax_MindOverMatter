@@ -1,6 +1,7 @@
 /**
  * api.ts — Typed API service layer for GHOST ATTACKS / Project RedString frontend.
  * Provides live backend polling with graceful local fallback data and scanning states.
+ * Implements adapter layer to map backend API responses to frontend component types.
  */
 import { useState, useEffect } from "react";
 
@@ -43,6 +44,53 @@ export interface SuspectLeaderboardItem {
   matched_bedtime_chart: SleepCyclePoint[];
   evidence_log: string[];
 }
+
+// Adapter functions to map backend responses to frontend types
+const adaptOsintItem = (backendItem: any): OsintFeedItem => ({
+  id: backendItem.post_id || backendItem.id || "",
+  source: backendItem.source as OsintSource || "telegram",
+  timestamp: backendItem.timestamp || "",
+  text: backendItem.message || backendItem.text || "",
+  keywords_flagged: Array.isArray(backendItem.keyword_hits)
+    ? backendItem.keyword_hits
+    : Array.isArray(backendItem.keywords_flagged)
+      ? backendItem.keywords_flagged
+      : [],
+  author_id: backendItem.author || backendItem.author_id || ""
+});
+
+const adaptBlockchainNode = (backendNode: any): BlockchainNode => ({
+  wallet_id: backendNode.wallet_id || "",
+  amount: Number(backendNode.amount) || 0,
+  timestamp: backendNode.timestamp || "",
+  hop_level: Number(backendNode.hop_level) || 0,
+  parent_wallet: backendNode.parent_wallet ?? null,
+  is_cashout_door: Boolean(backendNode.is_cashout_door) || false
+});
+
+const adaptCorrelationEvent = (backendEvent: any): CorrelationEvent => ({
+  osint_id: backendEvent.osint_id || backendEvent.osintId || "",
+  wallet_id: backendEvent.wallet_id || backendEvent.walletId || "",
+  correlation_reason: backendEvent.correlation_reason || backendEvent.correlationReason || "",
+  timestamp: backendEvent.timestamp || ""
+});
+
+const adaptSleepCyclePoint = (backendPoint: any): SleepCyclePoint => ({
+  hour: Number(backendPoint.hour) || 0,
+  suspect_posts: Number(backendPoint.suspect_posts) || 0,
+  wallet_txs: Number(backendPoint.wallet_txs) || 0
+});
+
+const adaptSuspectLeaderboardItem = (backendSuspect: any): SuspectLeaderboardItem => ({
+  suspect_alias: backendSuspect.suspect_alias || backendSuspect.suspectAlias || "Unknown",
+  guilt_score_percentage: Number(backendSuspect.guilt_score_percentage) || 0,
+  matched_bedtime_chart: Array.isArray(backendSuspect.matched_bedtime_chart)
+    ? backendSuspect.matched_bedtime_chart.map(adaptSleepCyclePoint)
+    : [],
+  evidence_log: Array.isArray(backendSuspect.evidence_log)
+    ? backendSuspect.evidence_log
+    : []
+});
 
 const DEFAULT_OSINT: OsintFeedItem[] = [
   {
@@ -190,51 +238,88 @@ export function useForensicData() {
 
     async function checkBackend() {
       try {
+        // Check health endpoint first to determine if backend is live
+        let healthOk = false;
+        try {
+          const healthRes = await fetch(`${BASE_URL}/api/v1/health`, {
+            signal: AbortSignal.timeout(2000)
+          });
+          healthOk = healthRes.ok;
+        } catch (healthErr) {
+          // Health check failed, but we'll still try the main endpoints
+        }
+
+        // Fetch data from all 4 active endpoints
         const [osintRes, nodesRes, corrRes, suspectsRes] = await Promise.allSettled([
-          fetch(`${BASE_URL}/api/v1/osint/feed`, { signal: AbortSignal.timeout(2000) }),
-          fetch(`${BASE_URL}/api/v1/blockchain/nodes`, { signal: AbortSignal.timeout(2000) }),
-          fetch(`${BASE_URL}/api/v1/correlation/timeline`, { signal: AbortSignal.timeout(2000) }),
-          fetch(`${BASE_URL}/api/v1/suspects/leaderboard`, { signal: AbortSignal.timeout(2000) }),
+          fetch(`${BASE_URL}/api/v1/osint/feed`, { signal: AbortSignal.timeout(3000) }),
+          fetch(`${BASE_URL}/api/v1/blockchain/nodes`, { signal: AbortSignal.timeout(3000) }),
+          fetch(`${BASE_URL}/api/v1/correlation/timeline`, { signal: AbortSignal.timeout(3000) }),
+          fetch(`${BASE_URL}/api/v1/suspects/leaderboard`, { signal: AbortSignal.timeout(3000) }),
         ]);
 
-        let hasLive = false;
+        let hasLiveData = false;
 
+        // Process OSINT feed
         if (osintRes.status === "fulfilled" && osintRes.value.ok) {
-          const data = await osintRes.value.json();
-          if (isMounted && Array.isArray(data) && data.length > 0) {
-            setOsint(data);
-            hasLive = true;
+          try {
+            const backendData = await osintRes.value.json();
+            if (isMounted && Array.isArray(backendData)) {
+              const adaptedData = backendData.map(adaptOsintItem);
+              setOsint(adaptedData);
+              hasLiveData = true;
+            }
+          } catch (parseErr) {
+            // Keep existing data if parsing fails
           }
         }
 
+        // Process blockchain nodes
         if (nodesRes.status === "fulfilled" && nodesRes.value.ok) {
-          const data = await nodesRes.value.json();
-          if (isMounted && Array.isArray(data) && data.length > 0) {
-            setNodes(data);
-            hasLive = true;
+          try {
+            const backendData = await nodesRes.value.json();
+            if (isMounted && Array.isArray(backendData)) {
+              const adaptedData = backendData.map(adaptBlockchainNode);
+              setNodes(adaptedData);
+              hasLiveData = true;
+            }
+          } catch (parseErr) {
+            // Keep existing data if parsing fails
           }
         }
 
+        // Process correlation timeline
         if (corrRes.status === "fulfilled" && corrRes.value.ok) {
-          const data = await corrRes.value.json();
-          if (isMounted && Array.isArray(data) && data.length > 0) {
-            setCorrelations(data);
-            hasLive = true;
+          try {
+            const backendData = await corrRes.value.json();
+            if (isMounted && Array.isArray(backendData)) {
+              const adaptedData = backendData.map(adaptCorrelationEvent);
+              setCorrelations(adaptedData);
+              hasLiveData = true;
+            }
+          } catch (parseErr) {
+            // Keep existing data if parsing fails
           }
         }
 
+        // Process suspects leaderboard
         if (suspectsRes.status === "fulfilled" && suspectsRes.value.ok) {
-          const data = await suspectsRes.value.json();
-          if (isMounted && Array.isArray(data) && data.length > 0) {
-            setSuspects(data);
-            hasLive = true;
+          try {
+            const backendData = await suspectsRes.value.json();
+            if (isMounted && Array.isArray(backendData)) {
+              const adaptedData = backendData.map(adaptSuspectLeaderboardItem);
+              setSuspects(adaptedData);
+              hasLiveData = true;
+            }
+          } catch (parseErr) {
+            // Keep existing data if parsing fails
           }
         }
 
+        // Update live backend status based on health check OR successful data fetch
         if (isMounted) {
-          setIsLiveBackend(hasLive);
+          setIsLiveBackend(healthOk || hasLiveData);
         }
-      } catch {
+      } catch (err) {
         if (isMounted) {
           setIsLiveBackend(false);
         }
@@ -245,8 +330,13 @@ export function useForensicData() {
       }
     }
 
+    // Initial check
     checkBackend();
+
+    // Poll every 10 seconds for updates
     const interval = setInterval(checkBackend, 10000);
+
+    // Cleanup on unmount
     return () => {
       isMounted = false;
       clearInterval(interval);
