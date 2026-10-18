@@ -185,6 +185,11 @@ frontend/
     - Implemented a dark transparent spotlight backdrop (`fixed inset-0 z-50 bg-black/85 backdrop-blur-[2px]`) elevating active targets with amber glow rings (`.tour-highlight`).
     - Rendered floating pure white text without bulky cards or containers, with click / `[Space]` / `[ArrowRight]` keyboard advance and `[Esc]` cancellation.
     - Linked all 6 forensic targets with designated IDs: `tour-osint`, `tour-topology`, `tour-attribution`, `tour-circadian`, `tour-proof`, and `tour-telemetry`.
+  - **Attack Simulation & Emergency Breach Warning Alert Engine:**
+    - Synthesized browser-native emergency klaxon audio via Web Audio API ([alertAudio.ts](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/utils/alertAudio.ts)), playing alternating 880Hz / 660Hz waves with zero external mp3 dependencies.
+    - Created [BreachWarningModal.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/BreachWarningModal.tsx) featuring a 5-cycle blink, chromatic text glitch animation, scanline CRT backdrop, and auto-transition to the Forensic Workbench in 4.5s (or immediately on click).
+    - Added floating trigger button (`SIMULATE $42M ATTACK`) on the landing page and idle scanner state.
+    - Implemented `hasAttackOccurred` data gate: displays idle radar monitoring state prior to exploit injection and reveals full live $42M peel-chain telemetry upon breach activation.
 
 ---
 
