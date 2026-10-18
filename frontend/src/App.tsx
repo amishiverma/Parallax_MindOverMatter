@@ -99,7 +99,6 @@ export default function App() {
                 <span className="text-zinc-400">Algorithm:</span>
                 <span className="text-zinc-200 font-medium">Time-Delta Fusion Engine</span>
               </div>
-              <span className="text-zinc-600">·</span>
               <WorkbenchTour />
             </div>
           </div>
