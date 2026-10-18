@@ -223,7 +223,8 @@ const DEFAULT_SUSPECTS: SuspectLeaderboardItem[] = [
   },
 ];
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+export const BASE_URL = import.meta.env.VITE_API_URL || 
+  (typeof window !== "undefined" ? `http://${window.location.hostname}:8000` : "http://localhost:8000");
 
 export function useForensicData() {
   const [osint, setOsint] = useState<OsintFeedItem[]>(DEFAULT_OSINT);
@@ -343,6 +344,43 @@ export function useForensicData() {
     };
   }, []);
 
+  const refetch = async () => {
+    try {
+      setIsLoading(true);
+      const [osintRes, nodesRes, corrRes, suspectsRes] = await Promise.allSettled([
+        fetch(`${BASE_URL}/api/v1/osint/feed`, { signal: AbortSignal.timeout(3000) }),
+        fetch(`${BASE_URL}/api/v1/blockchain/nodes`, { signal: AbortSignal.timeout(3000) }),
+        fetch(`${BASE_URL}/api/v1/correlation/timeline`, { signal: AbortSignal.timeout(3000) }),
+        fetch(`${BASE_URL}/api/v1/suspects/leaderboard`, { signal: AbortSignal.timeout(3000) }),
+      ]);
+
+      if (osintRes.status === "fulfilled" && osintRes.value.ok) {
+        const d = await osintRes.value.json();
+        if (Array.isArray(d)) setOsint(d.map(adaptOsintItem));
+        else if (d?.posts && Array.isArray(d.posts)) setOsint(d.posts.map(adaptOsintItem));
+      }
+      if (nodesRes.status === "fulfilled" && nodesRes.value.ok) {
+        const d = await nodesRes.value.json();
+        if (Array.isArray(d)) setNodes(d.map(adaptBlockchainNode));
+        else if (d?.nodes && Array.isArray(d.nodes)) setNodes(d.nodes.map(adaptBlockchainNode));
+      }
+      if (corrRes.status === "fulfilled" && corrRes.value.ok) {
+        const d = await corrRes.value.json();
+        if (Array.isArray(d)) setCorrelations(d.map(adaptCorrelationEvent));
+        else if (d?.events && Array.isArray(d.events)) setCorrelations(d.events.map(adaptCorrelationEvent));
+      }
+      if (suspectsRes.status === "fulfilled" && suspectsRes.value.ok) {
+        const d = await suspectsRes.value.json();
+        if (Array.isArray(d)) setSuspects(d.map(adaptSuspectLeaderboardItem));
+        else if (d?.leaderboard && Array.isArray(d.leaderboard)) setSuspects(d.leaderboard.map(adaptSuspectLeaderboardItem));
+      }
+    } catch {
+      // Fallback
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     osint,
     nodes,
@@ -350,5 +388,6 @@ export function useForensicData() {
     suspects,
     isLiveBackend,
     isLoading,
+    refetch,
   };
 }

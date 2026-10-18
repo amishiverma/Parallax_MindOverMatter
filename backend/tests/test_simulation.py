@@ -66,7 +66,7 @@ class TestAttackSimulation(unittest.TestCase):
         launch_res = self.client.post("/api/v1/attack/launch", json=payload)
         self.assertEqual(launch_res.status_code, 200)
         launch_data = launch_res.json()
-        self.assertEqual(launch_data["status"], "launched")
+        self.assertIn(launch_data["status"], ["breach_active", "launched"])
         self.assertTrue(launch_data["is_under_attack"])
         self.assertEqual(launch_data["attacker_alias"], "Judge_Test")
 

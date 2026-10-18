@@ -19,6 +19,8 @@ const MIXER_ROUTES = [
   "Cross-Chain Hop (Ethereum → Arbitrum → Monero)",
 ];
 
+import { BASE_URL } from "../services/api";
+
 export default function HackerTerminal() {
   // 1. Form States
   const [alias, setAlias] = useState("@Phantom_0x");
@@ -45,11 +47,11 @@ export default function HackerTerminal() {
       exploit_type: exploitType,
       boast_message: boastMsg,
       mixer_route: mixerRoute,
-      fracture_depth: fractureDepth,
+      peel_chain_depth: fractureDepth,
     };
 
     try {
-      await fetch("/api/v1/attack/launch", {
+      await fetch(`${BASE_URL}/api/v1/attack/launch`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -236,12 +238,15 @@ export default function HackerTerminal() {
         {/* SECTION 4: THE EXECUTION TRIGGER */}
         <div className="pt-4">
           {status === "breached" ? (
-            <div className="bg-red-950/30 border border-red-700/60 rounded-2xl p-6 text-center space-y-3">
+            <div className="bg-red-950/30 border border-red-700/60 rounded-2xl p-6 text-center space-y-3 animate-pulse">
               <div className="inline-flex items-center gap-2 text-red-400 font-mono text-sm font-bold">
-                <CheckCircle2 className="w-5 h-5 text-red-500" /> BREACH CONFIRMED: ${amountUsd.toLocaleString()} DRAINED
+                <CheckCircle2 className="w-5 h-5 text-red-500 animate-bounce" /> Exploit broadcasted. Telemetry live.
               </div>
-              <p className="text-xs text-zinc-400 max-w-md mx-auto">
-                Funds fractured into {fractureDepth} burner wallets. Attack injected into OSINT feeds and on-chain ledger.
+              <p className="text-xs text-zinc-300 font-mono max-w-md mx-auto">
+                BREACH CONFIRMED // ${amountUsd.toLocaleString()} DRAINED BY {alias}
+              </p>
+              <p className="text-[11px] text-zinc-400 max-w-md mx-auto">
+                Funds fractured into {fractureDepth} burner wallets. Injected into OSINT feeds and on-chain ledger.
               </p>
               <div className="pt-2">
                 <a

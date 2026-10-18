@@ -453,7 +453,8 @@ class SimulationEngine:
         self._simulated_chain = chain_txs
 
         return {
-            "status": "launched",
+            "status": "breach_active",
+            "message": "launched",
             "is_under_attack": True,
             "incident_id": self.incident_id,
             "attacker_alias": self.attacker_alias,

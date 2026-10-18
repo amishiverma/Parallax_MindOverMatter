@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CanvasScrollytelling } from "./components/scrollytelling/CanvasScrollytelling";
 import { WordRevealNarrative } from "./components/WordRevealNarrative";
 import { PeelChainFlow } from "./components/graph/PeelChainFlow";
@@ -6,10 +6,14 @@ import { SuspectDossier } from "./components/SuspectDossier";
 import { FloatingNavbar } from "./components/FloatingNavbar";
 import { ForensicArchitecture } from "./components/ForensicArchitecture";
 import HackerTerminal from "./pages/HackerTerminal";
-import { useForensicData } from "./services/api";
+import { useForensicData, BASE_URL } from "./services/api";
 import {
   Search,
   Radio,
+  AlertTriangle,
+  RotateCcw,
+  ArrowRight,
+  ShieldAlert,
 } from "lucide-react";
 
 export default function App() {
@@ -19,10 +23,98 @@ export default function App() {
   }
 
   const isBreachQuery = typeof window !== "undefined" && window.location.search.includes("breach=true");
-  const { osint, nodes, correlations, suspects, isLiveBackend, isLoading } = useForensicData();
+  const { osint, nodes, correlations, suspects, isLiveBackend, isLoading, refetch } = useForensicData();
   const [activeView, setActiveView] = useState<"landing" | "workbench">(isBreachQuery ? "workbench" : "landing");
   const [activeCorr, setActiveCorr] = useState<string>("osint-101");
   const [activeWalletId, setActiveWalletId] = useState<string>("0x66f0...99bb");
+
+  // Multi-Device Siren & Attack State
+  const [alertState, setAlertState] = useState<{
+    is_under_attack: boolean;
+    incident_id?: string;
+    attacker_alias?: string;
+    amount_usd?: number;
+    exploit_type?: string;
+  }>({ is_under_attack: false });
+  const [showSirenModal, setShowSirenModal] = useState<boolean>(false);
+  const [isResetting, setIsResetting] = useState<boolean>(false);
+
+  // 1.5-second polling loop for real-time breach detection from any connected device
+  useEffect(() => {
+    let isMounted = true;
+    let audioCtx: AudioContext | null = null;
+
+    const playBreachChime = () => {
+      try {
+        const AudioClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        if (!AudioClass) return;
+        audioCtx = new AudioClass();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.35);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.36);
+      } catch {
+        // Audio playback error or autoplay policy fallback
+      }
+    };
+
+    const pollAlerts = async () => {
+      try {
+        const res = await fetch(`${BASE_URL}/api/v1/alerts/latest`, {
+          signal: AbortSignal.timeout(1200),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted) {
+            if (data.is_under_attack && !alertState.is_under_attack) {
+              setAlertState(data);
+              setShowSirenModal(true);
+              setActiveView("workbench");
+              refetch();
+              playBreachChime();
+            } else if (!data.is_under_attack && alertState.is_under_attack) {
+              setAlertState(data);
+              setShowSirenModal(false);
+            }
+          }
+        }
+      } catch {
+        // Network timeout fallback
+      }
+    };
+
+    pollAlerts();
+    const interval = setInterval(pollAlerts, 1500);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+      if (audioCtx) {
+        audioCtx.close().catch(() => {});
+      }
+    };
+  }, [alertState.is_under_attack]);
+
+  const handleResetBreach = async () => {
+    setIsResetting(true);
+    try {
+      await fetch(`${BASE_URL}/api/v1/simulation/reset`, { method: "POST" });
+      setAlertState({ is_under_attack: false });
+      setShowSirenModal(false);
+      await refetch();
+    } catch {
+      // Backend offline fallback
+    } finally {
+      setIsResetting(false);
+    }
+  };
 
   const handleSelectOsint = (osintId: string) => {
     setActiveCorr(osintId);
@@ -46,7 +138,58 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#0d0e12] text-slate-200 font-sans antialiased selection:bg-slate-800">
+    <div className="min-h-screen w-full bg-[#0d0e12] text-slate-200 font-sans antialiased selection:bg-slate-800 relative">
+      {/* ───────────────────────────────────────────────────────────
+          REAL-TIME MULTI-DEVICE FULLSCREEN CRIMSON SIREN MODAL
+      ─────────────────────────────────────────────────────────── */}
+      {showSirenModal && alertState.is_under_attack && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-2xl bg-[#14080a] border-2 border-red-600 rounded-2xl p-6 md:p-8 text-center shadow-[0_0_80px_rgba(239,68,68,0.65)] space-y-6 overflow-hidden">
+            {/* Pulsing Ambient Background Glow */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(239,68,68,0.2)_0%,transparent_70%)] pointer-events-none animate-pulse" />
+
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-950/80 border border-red-600/60 text-red-300 font-mono text-xs uppercase tracking-widest animate-bounce">
+              <AlertTriangle className="w-4 h-4 text-red-500 animate-pulse" />
+              <span>LIVE BREACH DETECTED · WAR ROOM ENGAGED</span>
+            </div>
+
+            <div className="space-y-2">
+              <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight font-mono">
+                ⚠️ CRITICAL INTRUSION DETECTED
+              </h2>
+              <p className="text-red-400 font-mono text-base md:text-lg font-bold">
+                ${(alertState.amount_usd || 42000000).toLocaleString()} DRAINED BY{" "}
+                <span className="text-white underline decoration-red-500 underline-offset-4">
+                  {alertState.attacker_alias || "@Phantom_0x"}
+                </span>
+              </p>
+            </div>
+
+            <p className="text-xs text-zinc-300 font-mono max-w-lg mx-auto leading-relaxed">
+              Target contract breach confirmed. Live peel-chain fracturing and dark web OSINT intercept telemetry have been routed to the Forensic Investigation Workbench.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+              <button
+                onClick={() => setShowSirenModal(false)}
+                className="w-full sm:w-auto px-6 py-3 bg-red-600 hover:bg-red-500 text-white font-mono font-bold text-xs uppercase tracking-wider rounded-xl transition shadow-[0_0_30px_rgba(239,68,68,0.6)] flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>ENTER ACTIVE WAR ROOM</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              <button
+                onClick={handleResetBreach}
+                disabled={isResetting}
+                className="w-full sm:w-auto px-5 py-3 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-700/80 font-mono text-xs rounded-xl transition flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <RotateCcw className={`w-3.5 h-3.5 ${isResetting ? "animate-spin" : ""}`} />
+                <span>Reset Simulation</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Floating Glassmorphic Capsule Navbar */}
       <FloatingNavbar
         activeTab={activeView === "landing" ? "overview" : "workbench"}
@@ -89,6 +232,25 @@ export default function App() {
       ─────────────────────────────────────────────────────────── */}
       {activeView === "workbench" && (
         <main id="workbench" className="p-4 md:p-6 pt-24 md:pt-28 space-y-4">
+          {/* Real-time Intrusion Banner when under active attack */}
+          {alertState.is_under_attack && (
+            <div className="bg-gradient-to-r from-red-950/90 via-red-900/70 to-red-950/90 border border-red-600/80 rounded-xl p-3 flex flex-wrap items-center justify-between text-xs font-mono gap-3 shadow-[0_0_25px_rgba(239,68,68,0.3)] animate-pulse">
+              <div className="flex items-center gap-2.5 text-red-200">
+                <ShieldAlert className="w-4 h-4 text-red-400 animate-bounce" />
+                <span className="font-bold uppercase tracking-wider text-white">CRITICAL INTRUSION:</span>
+                <span>${(alertState.amount_usd || 42000000).toLocaleString()} DRAINED BY {alertState.attacker_alias || "@Phantom_0x"}</span>
+              </div>
+              <button
+                onClick={handleResetBreach}
+                disabled={isResetting}
+                className="px-3 py-1 bg-black/60 hover:bg-black/90 text-red-300 border border-red-700/60 rounded-md hover:text-white transition flex items-center gap-1.5 cursor-pointer text-[11px]"
+              >
+                <RotateCcw className={`w-3 h-3 ${isResetting ? "animate-spin" : ""}`} />
+                <span>Reset Breach</span>
+              </button>
+            </div>
+          )}
+
           {/* Workbench Header Bar */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-3 border-b border-zinc-800/80 text-xs gap-3 font-sans">
             <div className="flex items-center gap-3">
@@ -116,6 +278,14 @@ export default function App() {
                 <span className="text-zinc-400">Algorithm:</span>
                 <span className="text-zinc-200 font-medium">Time-Delta Fusion Engine</span>
               </div>
+              <button
+                onClick={handleResetBreach}
+                disabled={isResetting}
+                className="px-2 py-0.5 text-[10px] font-mono text-zinc-400 hover:text-zinc-200 border border-zinc-800 rounded bg-zinc-900/60 transition cursor-pointer"
+                title="Reset simulation to baseline"
+              >
+                Reset Breach
+              </button>
             </div>
           </div>
 
