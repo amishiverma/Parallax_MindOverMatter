@@ -7,6 +7,8 @@ OSINT blackout constants (all cross-domain correlation lives in correlator.py).
 Outputs JSON-ready dicts for the correlation engine.
 """
 
+from __future__ import annotations
+
 import json
 from collections import defaultdict
 from pathlib import Path

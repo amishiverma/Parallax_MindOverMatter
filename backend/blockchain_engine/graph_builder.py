@@ -6,6 +6,8 @@ Each wallet = node, each transaction = directed weighted edge.
 Outputs node/edge data as clean JSON dicts for FastAPI consumption.
 """
 
+from __future__ import annotations
+
 import json
 from pathlib import Path
 from typing import Any

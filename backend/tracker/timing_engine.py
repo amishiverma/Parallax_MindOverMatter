@@ -29,6 +29,8 @@ Clustering algorithm — sliding-window sequential scan
 Complexity: O(n log n) dominated by the sort; O(n) for the scan itself.
 """
 
+from __future__ import annotations
+
 import pandas as pd
 from datetime import datetime, timezone
 

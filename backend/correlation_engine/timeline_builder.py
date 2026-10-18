@@ -6,6 +6,8 @@ blockchain transactions, annotated with correlation context.
 Output is a JSON-ready list sorted by timestamp_utc.
 """
 
+from __future__ import annotations
+
 import json
 from datetime import datetime, timezone
 from pathlib import Path

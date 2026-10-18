@@ -170,7 +170,26 @@ frontend/
   - **Warm Amber Circadian Histogram:** Normal activity bars rendered in muted slate (`#71717a` / `#3f3f46`); dormant window (04:00-11:00 UTC) highlighted with delicate crosshatched warm amber tone (`#f59e0b` / `#d97706`) and Moscow sync banner.
   - **Streamlined Left-to-Right DAG Flowchart:** Cleaned [PeelChainFlow.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/graph/PeelChainFlow.tsx) with balanced horizontal spacing and smooth continuous 1.5px solid SVG bezier curves (`type: "default"`), subtle amber active pulse tracing, obsidian Genesis root card, and minimal `OTC Off-Ramp` badges.
   - **De-Cluttered Headers:** Simplified workbench top bar to clean title case: `Forensic Investigation — Case #42M-DEFI-HEIST` | `Latency Offset: 840ms · 38 Hop Matrix · Time-Delta Fusion Engine`, removing redundant buttons and boilerplate labels.
-  - **Removed Redundant Hero Terminal CTA:** Completely removed the Stage 3 bottom red button (`LAUNCH INVESTIGATION WORKBENCH ↓`) and `Target Deanonymized · Aleksei Voronin (@0x_Alek)` pill from [CanvasScrollytelling.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/scrollytelling/CanvasScrollytelling.tsx) to keep the scrollytelling viewport completely unobstructed and minimalist.
+  - **ForensicArchitecture View Re-Trigger & Card Hover Glow:**
+    - Configured `useInView(containerRef, { amount: 0.3 })` with dynamic `animKey` counter so both H2 headline and subtitle re-type from character 0 every single time the user scrolls to the section.
+    - Updated `TextType.tsx` to support polymorphic `as` prop and `initialDelay`.
+    - Added liquid glass hover glow (`hover:-translate-y-2 hover:border-white/30 hover:shadow-[0_0_35px_rgba(255,255,255,0.12)]`) and specular rim intensification (`group-hover:via-white/70`) across all 3 cards.
+  - **Simplified 3-Stage Peel-Chain Flow & Liquid Glass Cards:**
+    - Stripped micro-clutter from node cards: removed micro timestamps, long hash strings, and redundant sub-labels, keeping strictly 2 clean elements: Stage & Label + Bold Financial Amount.
+    - Upgraded [WalletNode.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/graph/WalletNode.tsx) to liquid glass rounded rectangles (`bg-slate-900/40 backdrop-blur-xl border border-white/10`) with top specular rim light, ambient amber glow on active/flagged nodes, and minimal OTC Off-Ramp pills.
+    - Aligned [PeelChainFlow.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/graph/PeelChainFlow.tsx) into 3 clean horizontal stages (Stage 1 Genesis Vault -> Stage 2 3-Hop Splits -> Stage 3 3-Hop Gateways).
+    - Added animated amber running arrows (`stroke: #f59e0b`, `strokeDasharray: "6,4"`) with directional arrowheads along active trace branches.
+    - Simplified header and legend: `Peel-Chain Topology · 3 Hops (38 Splits)` | `○ Intermediary Node` · `● OTC Gateway (Amber)` · `─ Active Path`.
+  - **Interactive Spotlight Onboarding Tour ([WorkbenchTour.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/WorkbenchTour.tsx)):**
+    - Built a 6-step guided walkthrough with a minimalist `(?)` trigger button in the workbench top-right header bar.
+    - Implemented a dark transparent spotlight backdrop (`fixed inset-0 z-50 bg-black/85 backdrop-blur-[2px]`) elevating active targets with amber glow rings (`.tour-highlight`).
+    - Rendered floating pure white text without bulky cards or containers, with click / `[Space]` / `[ArrowRight]` keyboard advance and `[Esc]` cancellation.
+    - Linked all 6 forensic targets with designated IDs: `tour-osint`, `tour-topology`, `tour-attribution`, `tour-circadian`, `tour-proof`, and `tour-telemetry`.
+  - **Attack Simulation & Emergency Breach Warning Alert Engine:**
+    - Synthesized browser-native emergency klaxon audio via Web Audio API ([alertAudio.ts](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/utils/alertAudio.ts)), playing alternating 880Hz / 660Hz waves with zero external mp3 dependencies.
+    - Created [BreachWarningModal.tsx](file:///Users/amishiverma/Documents/Projects/HackForge_MindOverMatter/frontend/src/components/BreachWarningModal.tsx) featuring a 5-cycle blink, chromatic text glitch animation, scanline CRT backdrop, and auto-transition to the Forensic Workbench in 4.5s (or immediately on click).
+    - Added floating trigger button (`SIMULATE $42M ATTACK`) on the landing page and idle scanner state.
+    - Implemented `hasAttackOccurred` data gate: displays idle radar monitoring state prior to exploit injection and reveals full live $42M peel-chain telemetry upon breach activation.
 
 ---
 
