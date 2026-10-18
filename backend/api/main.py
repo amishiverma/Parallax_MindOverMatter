@@ -12,10 +12,12 @@ All endpoints are registered under both `/` and `/api/v1/` route prefixes:
   - /health & /api/v1/health
 """
 
+from __future__ import annotations
+
 import json
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -32,6 +34,11 @@ from backend.blockchain_engine.dormancy import analyze_blockchain_dormancy
 from backend.correlation_engine.correlator import run_correlation
 from backend.correlation_engine.timeline_builder import build_timeline
 from backend.tracker.timing_engine import detect_puppeteer_clusters
+from backend.api.simulation import (
+    AttackLaunchRequest,
+    AlertStatusResponse,
+    simulation_engine,
+)
 
 # ── App Init ───────────────────────────────────────────────────────────────────
 app = FastAPI(
@@ -56,6 +63,8 @@ DATA_DIR = ROOT / "backend" / "data" / "raw"
 # ── Data Loaders ──────────────────────────────────────────────────────────────
 
 def _cached_osint_posts() -> list[dict]:
+    if simulation_engine.is_under_attack and simulation_engine._simulated_osint is not None:
+        return simulation_engine._simulated_osint
     path = DATA_DIR / "osint_chatter.json"
     if not path.exists():
         raise FileNotFoundError(f"osint_chatter.json not found at {path}. "
@@ -65,6 +74,8 @@ def _cached_osint_posts() -> list[dict]:
 
 
 def _cached_chain_txs() -> list[dict]:
+    if simulation_engine.is_under_attack and simulation_engine._simulated_chain is not None:
+        return simulation_engine._simulated_chain
     path = DATA_DIR / "blockchain_txs.json"
     if not path.exists():
         raise FileNotFoundError(f"blockchain_txs.json not found at {path}. "
@@ -89,7 +100,7 @@ def _health_handler() -> dict[str, str]:
 
 def _osint_feed_handler(
     flagged_only: bool = False,
-    author: str | None = None,
+    author: Optional[str] = None,
     limit: int = 100,
 ) -> dict[str, Any] | JSONResponse:
     """
@@ -130,7 +141,7 @@ def _osint_feed_handler(
 
 
 def _blockchain_nodes_handler(
-    role: str | None = None,
+    role: Optional[str] = None,
 ) -> dict[str, Any] | JSONResponse:
     """
     Blockchain transaction graph — nodes (wallets) + edges (transfers) + summary.
@@ -176,7 +187,7 @@ def _blockchain_nodes_handler(
 
 def _correlation_timeline_handler(
     include_neutral: bool = False,
-    severity: str | None = None,
+    severity: Optional[str] = None,
     limit: int = 500,
 ) -> dict[str, Any] | JSONResponse:
     """
@@ -249,7 +260,7 @@ def health() -> dict[str, str]:
 @app.get("/api/v1/osint/feed", tags=["OSINT"])
 def osint_feed(
     flagged_only: bool = Query(False, description="Return only flagged (boast/panic) posts"),
-    author: str | None = Query(None, description="Filter by suspect handle"),
+    author: Optional[str] = Query(None, description="Filter by suspect handle"),
     limit: int = Query(100, ge=1, le=1000, description="Max posts to return"),
 ) -> dict[str, Any]:
     return _osint_feed_handler(flagged_only=flagged_only, author=author, limit=limit)
@@ -258,7 +269,7 @@ def osint_feed(
 @app.get("/blockchain/nodes", tags=["Blockchain"])
 @app.get("/api/v1/blockchain/nodes", tags=["Blockchain"])
 def blockchain_nodes(
-    role: str | None = Query(None, description="Filter by role: exploit_root|mixer|exit"),
+    role: Optional[str] = Query(None, description="Filter by role: exploit_root|mixer|exit"),
 ) -> dict[str, Any]:
     return _blockchain_nodes_handler(role=role)
 
@@ -267,7 +278,7 @@ def blockchain_nodes(
 @app.get("/api/v1/correlation/timeline", tags=["Correlation"])
 def correlation_timeline(
     include_neutral: bool = Query(False, description="Include neutral OSINT posts"),
-    severity: str | None = Query(None, description="Filter by severity: LOW|MEDIUM|HIGH|CRITICAL"),
+    severity: Optional[str] = Query(None, description="Filter by severity: LOW|MEDIUM|HIGH|CRITICAL"),
     limit: int = Query(500, ge=1, le=5000, description="Max timeline events to return"),
 ) -> dict[str, Any]:
     return _correlation_timeline_handler(include_neutral=include_neutral, severity=severity, limit=limit)
@@ -279,6 +290,31 @@ def suspects_leaderboard(
     top_n: int = Query(10, ge=1, le=100, description="Number of top suspects to return"),
 ) -> dict[str, Any]:
     return _suspects_leaderboard_handler(top_n=top_n)
+
+
+# ── Simulation & Live Attack Endpoints ────────────────────────────────────────
+
+@app.post("/attack/launch", tags=["Simulation"])
+@app.post("/api/v1/attack/launch", tags=["Simulation"])
+def attack_launch(
+    payload: AttackLaunchRequest = AttackLaunchRequest(),
+) -> dict[str, Any]:
+    """Launch dynamic synthetic attack and immediately update live state."""
+    return simulation_engine.launch_attack(payload)
+
+
+@app.get("/alerts/latest", response_model=AlertStatusResponse, tags=["Alerts"])
+@app.get("/api/v1/alerts/latest", response_model=AlertStatusResponse, tags=["Alerts"])
+def alerts_latest() -> dict[str, Any]:
+    """Return real-time breach alert state."""
+    return simulation_engine.get_alert_status()
+
+
+@app.post("/simulation/reset", tags=["Simulation"])
+@app.post("/api/v1/simulation/reset", tags=["Simulation"])
+def simulation_reset() -> dict[str, Any]:
+    """Reset simulation engine back to baseline static state."""
+    return simulation_engine.reset()
 
 
 # ── Dev entry point ────────────────────────────────────────────────────────────
