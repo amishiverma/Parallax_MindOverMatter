@@ -137,17 +137,6 @@ export default function App() {
                   {hasAttackOccurred ? "0x7a1b...4e92" : "0x0000...0000 (IDLE)"}
                 </span>
               </span>
-              {hasAttackOccurred ? (
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-red-500/10 text-red-400 border border-red-500/30 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping" />
-                  INCIDENT ACTIVE
-                </span>
-              ) : (
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  STANDBY
-                </span>
-              )}
             </div>
 
             <div className="flex items-center gap-4 text-xs font-sans">
