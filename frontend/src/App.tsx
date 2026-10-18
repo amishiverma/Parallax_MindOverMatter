@@ -5,6 +5,7 @@ import { PeelChainFlow } from "./components/graph/PeelChainFlow";
 import { SuspectDossier } from "./components/SuspectDossier";
 import { FloatingNavbar } from "./components/FloatingNavbar";
 import { ForensicArchitecture } from "./components/ForensicArchitecture";
+import HackerTerminal from "./pages/HackerTerminal";
 import { useForensicData } from "./services/api";
 import {
   Search,
@@ -12,8 +13,14 @@ import {
 } from "lucide-react";
 
 export default function App() {
+  // Direct adversarial exploit console routing
+  if (typeof window !== "undefined" && window.location.pathname === "/hacker") {
+    return <HackerTerminal />;
+  }
+
+  const isBreachQuery = typeof window !== "undefined" && window.location.search.includes("breach=true");
   const { osint, nodes, correlations, suspects, isLiveBackend, isLoading } = useForensicData();
-  const [activeView, setActiveView] = useState<"landing" | "workbench">("landing");
+  const [activeView, setActiveView] = useState<"landing" | "workbench">(isBreachQuery ? "workbench" : "landing");
   const [activeCorr, setActiveCorr] = useState<string>("osint-101");
   const [activeWalletId, setActiveWalletId] = useState<string>("0x66f0...99bb");
 
@@ -63,6 +70,17 @@ export default function App() {
 
           {/* Liquid Glass Architecture Cards & Staggered Scroll with top blend mask */}
           <ForensicArchitecture onLaunch={handleLaunchWorkbench} />
+
+          {/* Discrete Floating Adversary Exploit Terminal Link */}
+          <a
+            href="/hacker"
+            className="fixed bottom-6 right-6 z-40 px-4 py-2 bg-zinc-900/90 hover:bg-zinc-800 border border-red-950/80 hover:border-red-600/60 rounded-full text-xs font-mono text-zinc-300 shadow-[0_0_20px_rgba(0,0,0,0.6)] flex items-center gap-2 transition cursor-pointer transform hover:scale-105 active:scale-95"
+            title="Adversary Exploit Injection Console"
+          >
+            <span className="text-red-400">💀</span>
+            <span className="text-zinc-200">ADVERSARY CONSOLE</span>
+            <span className="text-[10px] text-red-400 font-sans">(/hacker)</span>
+          </a>
         </main>
       )}
 
